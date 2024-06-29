@@ -13,8 +13,8 @@ const session = require("express-session")
 //Route Imports
 const userRouter = require("./routes/user");
 const messageRouter= require("./routes/message");
-//const postRouter = require("./routes/post");
-//const commentRouter = require("./routes/comment")
+const postRouter = require("./routes/post");
+const commentRouter = require("./routes/comment")
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -50,8 +50,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
-//app.use("/api/comments", commentRouter);
-//app.use("/api/post", postRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/post", postRouter);
 
 //Error Handling
 app.use(function(req, res, next) {
