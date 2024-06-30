@@ -8,7 +8,10 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const passport = require("passport");
-const session = require("express-session")
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 
 //Route Imports
 const userRouter = require("./routes/user");
@@ -28,8 +31,14 @@ async function main(){
     await mongoose.connect(mongoDB);
 }
 
-//app.use(passport.initialize());
-//app.use(passport.session());
+app.use(session({
+        secret: process.env.SECRET_KEY, 
+        resave:false, 
+        saveUninitialized:false, 
+        store: MongoStore.create({mongoUrl: process.env.MONGO_URI
+    })}))
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Cors
 const allowedOrigins = [
@@ -52,6 +61,37 @@ app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/post", postRouter);
+
+//Authentication
+passport.use(new LocalStrategy({
+    usernameField: 'username',
+    passwordField: 'password'
+}, async (username, password, done) => {
+    try {
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return done(null, false, { message: "Incorrect username" });
+        }
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
+            return done(null, false, { message: "Incorrect password" });
+        }
+        return done(null, user);
+    } catch (err) {
+        return done(err);
+    }
+}));
+
+passport.serializeUser((user,done)=>{
+    done(null,user.id)
+})
+
+passport.deserializeUser(async (id,done)=>{
+    try{
+        const user = await User.findById(id);
+        done(null,user);
+    }catch(err){done(err)}
+})
 
 //Error Handling
 app.use(function(req, res, next) {

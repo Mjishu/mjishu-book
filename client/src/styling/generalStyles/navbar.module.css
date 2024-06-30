@@ -1,0 +1,17 @@
+.navbar{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-around;
+}
+
+.navElement{
+    text-decoration:none;
+    color: black;
+}
+.navElement:visited,{
+    color:black;
+}
+
+.navElement:hover{
+    color: blue;
+}

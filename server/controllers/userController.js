@@ -1,17 +1,36 @@
 const User = require("../models/user");
 const passport = require("passport");
 require("dotenv").config();
-
+const {body,validationResult} = require("express-validator");
+const LocalStrategy = require("passport-local").Strategy;
+const session = require("express-session");
 exports.user_create = async(req,res)=> {
-    res.json({message:"Creating user"})
+    try{
+        const newUser = new User({
+            username:req.body.username,
+            email:req.body.email,
+            password: req.body.password
+        })
+        await newUser.save();
+        res.json({message:"success"})
+    }catch(error){
+        res.status(500).json({message: `error creating new user ${error}`})
+    }
 };
 
 exports.find_all = async(req,res)=> {
-    res.json({message: "finding all users"})
+    try{
+        const foundUsers = await User.find().populate('followers following').exec()
+        res.json(foundUsers)
+    }catch(error){res.status(500).json({message:`Error fetching messages: ${error}`})}
 };
 
 exports.find_one = async(req,res)=>{
-    res.json({message: "finding one user"})
+    const id = req.params.id
+    try{
+        const foundUser = await User.findById(id).populate("followers following").exec()
+        res.json(foundUser)
+    }catch(error){res.status(500).json({message:`error fetching user ${error}`})}
 };
 
 exports.user_update = async(req,res)=>{
@@ -19,17 +38,54 @@ exports.user_update = async(req,res)=>{
 };
 
 exports.user_delete = async(req,res)=>{
-    res.json({message:"deleting a user"})
+    const id = req.params.id;
+    try{
+        await User.findByIdAndDelete(id)
+    }catch(error){res.status(500).json({message:`error deleting user ${error}`})}
 };
 
 exports.user_current = async(req,res) => {
-    res.json({message:"finding current user"})
+    try{
+        console.log("finding current user")
+        res.json(req.user);
+    }catch(error){res.status(500).json({message:`error fetching current user ${error}`})}
 }
 
 exports.user_sign_in = async(req,res,next)=>{
-    res.json({message:"signing in"})
+    console.log(req.body)
+    try{
+        passport.authenticate("local", (err,user,info) =>{
+            if(err){
+                console.log(err);
+                const error = new Error(`Error trying to authenticate: ${err}`);
+                return next(error);
+            }
+            if(!user){
+                console.error(`Authentication failed! ${info.message}`);
+                return res.status(401).json({message:info.message});
+            }
+            console.log("made it to login")
+            req.logIn(user,err => {
+                console.log('inside login')
+                if(err){
+                    console.log(`there was an error logging in ${err}`);
+                    return next(err)
+                };
+                res.json({message:"success"})
+            })
+        })
+    }catch(error){
+        res.status(500).json({message:`error trying to signin: ${error}`});
+        return next(error)
+    }
 };
 
 exports.user_sign_out = async(req,res,next)=>{
-    res.json({message:"signing a user out"})
+    try{
+        req.logout(err =>{
+            if(err){return next(err)};
+            res.json({message:"success"})
+        }) 
+    }catch(error){
+    res.status(500).json({message:`error logging out: ${error}`})}
 };
