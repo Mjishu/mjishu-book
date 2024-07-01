@@ -1,0 +1,14 @@
+.form{
+    display:flex;
+    flex-direction:column;
+}
+
+.button{
+    width: 5rem;
+}
+
+.textarea{
+    width: 13rem;
+    height: 7rem;
+    resize:none;
+}

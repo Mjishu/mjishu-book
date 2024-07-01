@@ -1,0 +1,14 @@
+.form{
+    display:flex;
+    flex-direction:column;
+}
+
+.messageInput{
+    width:20rem;
+    height:12rem;
+    resize:none;
+}
+
+.postButton{
+    width:5rem;
+}

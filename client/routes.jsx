@@ -3,6 +3,9 @@ import Error from "./src/components/generalComponents/Error";
 import LogIn from "./src/components/userComponents/log-in";
 import Signup from "./src/components/userComponents/sign-up";
 import User from "./src/components/generalComponents/User";
+import CreatePost from "./src/components/postComponents/createPost";
+import PostDetail from "./src/components/postComponents/postDetail";
+import Profile from "./src/components/userComponents/Profile";
 
 const routes = [
     {
@@ -21,6 +24,17 @@ const routes = [
     {
         path:"/sign-up",
         element:<Signup/>
+    },
+    {
+        path:"/post/create",
+        element:<CreatePost/>
+    },
+    {
+        path:"/post/:id",
+        element:<PostDetail/>
+    },{
+        path:"/profile/:id",
+        element: <Profile/>
     }
 
 ]
