@@ -12,12 +12,8 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
+const bcrypt = require("bcrypt")
 
-//Route Imports
-const userRouter = require("./routes/user");
-const messageRouter= require("./routes/message");
-const postRouter = require("./routes/post");
-const commentRouter = require("./routes/comment")
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -57,11 +53,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use("/api/user", userRouter);
-app.use("/api/message", messageRouter);
-app.use("/api/comments", commentRouter);
-app.use("/api/post", postRouter);
-
 //Authentication
 passport.use(new LocalStrategy({
     usernameField: 'username',
@@ -90,8 +81,20 @@ passport.deserializeUser(async (id,done)=>{
     try{
         const user = await User.findById(id);
         done(null,user);
-    }catch(err){done(err)}
+  }catch(err){done(err)}
 })
+
+//Route Imports
+const userRouter = require("./routes/user");
+const messageRouter= require("./routes/message");
+const postRouter = require("./routes/post");
+const commentRouter = require("./routes/comment")
+
+//Calls routers
+app.use("/api/user", userRouter);
+app.use("/api/message", messageRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/post", postRouter);
 
 //Error Handling
 app.use(function(req, res, next) {

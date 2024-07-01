@@ -52,9 +52,8 @@ exports.user_current = async(req,res) => {
 }
 
 exports.user_sign_in = async(req,res,next)=>{
-    console.log(req.body)
     try{
-        passport.authenticate("local", (err,user,info) =>{
+        passport.authenticate("local", (err,user,info) =>{ //i dont think its making the call?
             if(err){
                 console.log(err);
                 const error = new Error(`Error trying to authenticate: ${err}`);
@@ -64,16 +63,14 @@ exports.user_sign_in = async(req,res,next)=>{
                 console.error(`Authentication failed! ${info.message}`);
                 return res.status(401).json({message:info.message});
             }
-            console.log("made it to login")
             req.logIn(user,err => {
-                console.log('inside login')
                 if(err){
                     console.log(`there was an error logging in ${err}`);
                     return next(err)
                 };
                 res.json({message:"success"})
             })
-        })
+        })(req,res,next);
     }catch(error){
         res.status(500).json({message:`error trying to signin: ${error}`});
         return next(error)

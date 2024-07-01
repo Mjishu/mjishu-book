@@ -17,6 +17,8 @@ router.put("/find/:id/update", userController.user_update);
 
 router.delete("/find/:id/delete", userController.user_delete);
 
-router.post("/sign-in", userController.user_sign_in)
+router.post("/sign-in", userController.user_sign_in);
+
+router.get("/logout", userController.user_sign_out);
 
 module.exports = router;

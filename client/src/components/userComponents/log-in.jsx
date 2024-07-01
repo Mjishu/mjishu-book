@@ -27,7 +27,7 @@ function LogIn(){
 
         fetch("/api/user/sign-in",fetchParams)
         .then(res => res.json())
-        .then(data => console.log(data))
+        .then(data => data.message === "success" && navigate("/"))
         .catch(error => console.error(`error making sigin in call ${error}`))
     }
 
