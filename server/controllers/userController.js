@@ -46,6 +46,9 @@ exports.user_delete = async(req,res)=>{
 
 exports.user_current = async(req,res) => {
     try{
+        if(!req.user){
+            return res.status(401).json({message:"none"})
+        }
         console.log("finding current user")
         res.json(req.user);
     }catch(error){res.status(500).json({message:`error fetching current user ${error}`})}

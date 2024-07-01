@@ -1,7 +1,14 @@
 const Post = require("../models/post");
 
 exports.post_create = async(req,res)=>{
-    res.json({message:"Creating post"})
+    const newPost = new Post({
+        author:req.user._id,
+        message: req.body.message,
+        image: req.body.image || ""
+    })
+    await newPost.save();
+    console.log(newPost);
+    res.json({message:"success"})
 };
 
 exports.post_update = async(req,res)=>{
