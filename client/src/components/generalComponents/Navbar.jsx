@@ -16,7 +16,7 @@ function Navbar(){
     return (
         <div className={style.navbar}>
             <Link className={style.navElement} to="/">Home</Link>
-            <Link className={style.navElement} to="#">Messages</Link>
+            <Link className={style.navElement} to="/messages">Messages</Link>
         <Link className={style.navElement} to="/post/create">Post</Link>
             <Link className={style.navElement} to={`/profile/${currentUser?._id}`}>Profile</Link>
         </div>

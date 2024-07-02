@@ -6,6 +6,8 @@ import User from "./src/components/generalComponents/User";
 import CreatePost from "./src/components/postComponents/createPost";
 import PostDetail from "./src/components/postComponents/postDetail";
 import Profile from "./src/components/userComponents/Profile";
+import MessageHolders from "./src/components/messageComponents/MessageHolders";
+import MessageId from "./src/components/messageComponents/MessageId";
 
 const routes = [
     {
@@ -35,6 +37,14 @@ const routes = [
     },{
         path:"/profile/:id",
         element: <Profile/>
+    },
+    {
+        path:"/messages",
+        element:<MessageHolders/>
+    },
+    {
+        path: "/messages/:id",
+        element:<MessageId/>
     }
 
 ]
