@@ -2,11 +2,12 @@ const Message = require("../models/message");
 
 exports.message_create = async(req,res)=>{
     try{
-    const newMessage = new Message({
-        author: req.user._id,
-        recipient: req.body.id,
+        
+        const newMessage = new Message({
+            users:[req.user._id, req.body.id]
     })
-        await newMessage.save()
+        //await newMessage.save()
+        console.log(newMessage)
         res.json({message:"success"})
     }catch(error){res.status(500).json({message:`there was an error creating message: ${error}`})}
 };

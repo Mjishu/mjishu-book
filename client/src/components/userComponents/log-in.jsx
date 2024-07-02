@@ -1,6 +1,7 @@
 import React from "react";
 import style from "../../styling/userStyles/userEntry.module.css";
 import {useNavigate} from "react-router-dom";
+import {useUser} from "./UserContext.jsx";
 
 function LogIn(){
     const [loginData,setLoginData] = React.useState({
@@ -8,6 +9,7 @@ function LogIn(){
         password: ""
     });
     const navigate = useNavigate();
+    const {setCurrentUser} = useUser();
 
     function handleChange(e){
         const {name,value} = e.target;
@@ -27,7 +29,11 @@ function LogIn(){
 
         fetch("/api/user/sign-in",fetchParams)
         .then(res => res.json())
-        .then(data => data.message === "success" && navigate("/"))
+        .then(data => {
+            if(data.message === "success"){
+                setCurrentUser(data.user)
+                navigate("/")}
+        })
         .catch(error => console.error(`error making sigin in call ${error}`))
     }
 

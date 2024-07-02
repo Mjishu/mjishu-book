@@ -20,7 +20,7 @@ exports.user_create = async(req,res)=> {
 
 exports.find_all = async(req,res)=> {
     try{
-        const foundUsers = await User.find().populate('followers following').exec()
+        const foundUsers = await User.find({_id: {$ne:req.user._id}}).populate('followers following').exec()
         res.json(foundUsers)
     }catch(error){res.status(500).json({message:`Error fetching messages: ${error}`})}
 };
@@ -75,7 +75,7 @@ exports.user_sign_in = async(req,res,next)=>{
                     console.log(`there was an error logging in ${err}`);
                     return next(err)
                 };
-                res.json({message:"success"})
+                res.json({message:"success",user:req.user})
             })
         })(req,res,next);
     }catch(error){

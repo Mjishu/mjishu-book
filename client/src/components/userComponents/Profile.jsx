@@ -1,9 +1,10 @@
 import React from "react";
 import style from "../../styling/userStyles/profile.module.css";
-import Navbar from "../generalComponents/Navbar"
+import Navbar from "../generalComponents/Navbar";
+import {useUser} from "./UserContext.jsx"
 
 function Profile(){
-    const [currentUser,setCurrentUser] = React.useState();
+    const {currentUser,isLoading} = useUser();
     const [loading,setLoading] = React.useState(true);
     const [userPosts,setUserPosts] = React.useState();
     const [status,setStatus] = React.useState({showEdit:false,})
@@ -12,22 +13,13 @@ function Profile(){
         email:""
     });
 
-    React.useEffect(() => {
-        fetch("/api/user/current")
-        .then(res => res.json())
-        .then(data => {
-            setCurrentUser(data)
-            setEditData(prev=>({...prev, username:data.username, email:data.email}))
-            setLoading(false)
-        })
-        .catch(err => console.error(`error fetching user ${err}`))
-    },[])
-
     React.useEffect(()=>{
         currentUser && fetch(`/api/post/find/user/${currentUser._id}`)
         .then(res=>res.json())
         .then(data=> setUserPosts(data))
         .catch(err => console.error(`there was an error fetching user posts: ${err}`))
+
+        setEditData(prevData =>({...prevData, username:currentUser?.username, email:currentUser?.email}))
     },[currentUser]);
 
     const postsMapped = userPosts?.map(post =>{
@@ -70,7 +62,7 @@ function Profile(){
         </div>
     )
 
-    if(loading){return <h1>Loading...</h1>}
+    if(loading && isLoading){return <h1>Loading...</h1>}
 
     return(
         <div>

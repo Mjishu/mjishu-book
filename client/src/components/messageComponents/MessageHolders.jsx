@@ -1,18 +1,19 @@
 import React from "react";
-import Navbar from "../generalComponents/Navbar"
-import {useNavigate} from "react-router-dom"
+import Navbar from "../generalComponents/Navbar";
+import {useNavigate} from "react-router-dom";
+import {useUser} from "../userComponents/UserContext.jsx"
 
 function MessageHolders(){
-    const [userMessages, setUserMessages] = React.useState();
+    const {currentUser,isLoading} = useUser();
+    const [userMessages, setUserMessages] = React.useState([]);
     const [allUsers, setAllUsers] = React.useState();
     const [loading, setLoading] = React.useState(true);
     const navigate = useNavigate();
 
     React.useEffect(()=>{
-        fetch("/api/message/all")//set this to user id but need to do useContext first
+        currentUser && fetch(`/api/message/find/user/${currentUser._id}`)//set this to user id but need to do useContext first
         .then(res => res.json())
-        .then(data => {setUserMessages(data)
-        })
+        .then(data => {setUserMessages(data)})
         .catch(error => console.error(`there was an error fetching messages: ${error}`))
 
         fetch("/api/user/find")
@@ -31,7 +32,8 @@ function MessageHolders(){
         console.log(id)
     }
 
-    function handleUserClick(id){ //Need to if message doesnt exist between the 2 ids, create message, else open message
+    function createMessage(id){
+        console.log("creating message")
         const fetchParams = {
             method:"PUSH",
             headers:{"Content-Type": "application/json"},
@@ -43,9 +45,36 @@ function MessageHolders(){
         .catch(error => console.error(`there was an error creating message: ${error}`))
     }
 
+    function openMessage(id){
+        navigate(`/messages/${id}`)
+    }
+
+    function handleUserClick(id){ //Need to if message doesnt exist between the 2 ids, create message, else open message
+
+        let messageExists =false;
+        let postId;
+        for(const message of userMessages){
+            let currentExists = false;
+            let otherExists = false;
+            for(const user of message.users){
+                console.log(user)
+                if(currentUser._id === user){currentExists=true}
+                else if(id === user){
+                    otherExists=true
+                    postId = message._id
+                }
+            }
+            if(currentExists && otherExists){messageExists = true}
+        }
+        if(messageExists){openMessage(postId)}
+        else{
+            createMessage(id)
+        }
+    }
+
     const usersMapped = allUsers?.map(user => {
         return(
-            <div key={user._id} onClick={() => handlePostClick(user._id)}>
+            <div key={user._id} onClick={() => handleUserClick(user._id)}>
                 <h3>{user.username}</h3>
             </div>
         )

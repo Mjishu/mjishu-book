@@ -2,38 +2,42 @@ import React from 'react';
 import Navbar from "./components/generalComponents/Navbar";
 import {Link,useNavigate} from "react-router-dom";
 import Post from "./components/postComponents/Post.jsx"
+import {useUser} from "./components/userComponents/UserContext.jsx"
 
 function App() {
-    const [currentUser, setCurrentUser] = React.useState();
-    const [loading, setLoading] = React.useState(true);
+    const {currentUser, setCurrentUser,isLoading} = useUser();
+    const [postsLoading, setPostsLoading] = React.useState(true);
     const [allPosts,setAllPosts]= React.useState();
     const navigate = useNavigate();
 
-    React.useEffect(()=>{
-        fetch("/api/user/current")
-        .then(res => res.json())
-        .then(data => data.message !== "none" ? setCurrentUser(data) : console.log(data.message))
-        .catch(error => console.error(`there was an error fetching current user ${error}`))
-        .finally(() => setLoading(false))
-    },[])
+    React.useEffect(() => {
+        if(!isLoading){
+            if(!currentUser || currentUser.message === "none"){
+                navigate("/auth")
+            }else{
+                fetchPosts();
+            }
+        }
+    },[currentUser,isLoading,navigate])
 
-    React.useEffect(()=>{
-        setLoading(true);
+    function fetchPosts(){
+        setPostsLoading(true);
 
         fetch("/api/post/all")
         .then(res =>res.json())
         .then(data => setAllPosts(data))
         .catch(error => console.error(`error fetching posts ${error}`))
-        .finally(()=>setLoading(false))
-    },[])
+        .finally(()=>setPostsLoading(false))
+    };
 
-    React.useEffect(() => {
-        if(!loading && !currentUser){navigate("/auth")}
-    },[currentUser,loading])
 
     function handleLogout(){
         fetch("/api/user/logout")
-        .then(res =>res.json()).then(data => data.message === "success" && location.reload())
+        .then(res =>res.json())
+        .then(data => {
+            setCurrentUser(null);
+            data.message === "success" && navigate("/auth");
+        })
         .catch(err => console.error(`error logging out ${err}`))
     }
 
@@ -49,7 +53,7 @@ function App() {
         )
     })
 
-    if(loading){
+    if(postsLoading || isLoading){
         return <p>Loading...</p>
     }
 
@@ -59,7 +63,7 @@ function App() {
         <div>
         <h1>Hello {currentUser?.username}</h1>
         {allPostsMapped}
-        {currentUser && <button onClick={handleLogout}>Logout</button>}
+        <button onClick={handleLogout}>Logout</button>
         </div>
         </div>
     )
