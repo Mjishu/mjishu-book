@@ -13,7 +13,7 @@ function MessageHolders(){
     React.useEffect(()=>{
         currentUser && fetch(`/api/message/find/user/${currentUser._id}`)//set this to user id but need to do useContext first
         .then(res => res.json())
-        .then(data => {setUserMessages(data)})
+        .then(data => setUserMessages(data))
         .catch(error => console.error(`there was an error fetching messages: ${error}`))
 
         fetch("/api/user/find")
@@ -26,18 +26,21 @@ function MessageHolders(){
             console.error(`there was an error fetching all users: ${err}`)
             setLoading(false)
         })
-    },[])
+    },[currentUser]);
 
-    function handlePostClick(id){
-        console.log(id)
+    React.useEffect(() => console.log(`User messages : ${userMessages}`), [userMessages])
+
+;
+     function handlePostClick(id){
+         navigate(`/messages/${id}`)
     }
 
     function createMessage(id){
         console.log("creating message")
         const fetchParams = {
-            method:"PUSH",
+            method:"POST",
             headers:{"Content-Type": "application/json"},
-            body:JSON.stringify(id)
+            body:JSON.stringify({id:id})
         }
         fetch("/api/message/create",fetchParams)
         .then(res => res.json())
@@ -50,23 +53,25 @@ function MessageHolders(){
     }
 
     function handleUserClick(id){ //Need to if message doesnt exist between the 2 ids, create message, else open message
-
         let messageExists =false;
         let postId;
         for(const message of userMessages){
             let currentExists = false;
             let otherExists = false;
             for(const user of message.users){
-                console.log(user)
-                if(currentUser._id === user){currentExists=true}
-                else if(id === user){
+                if(currentUser._id === user._id){
+                    currentExists=true
+                }
+                else if(id === user._id){
                     otherExists=true
                     postId = message._id
                 }
             }
             if(currentExists && otherExists){messageExists = true}
         }
-        if(messageExists){openMessage(postId)}
+        if(messageExists){
+            openMessage(postId)
+        }
         else{
             createMessage(id)
         }
@@ -80,12 +85,12 @@ function MessageHolders(){
         )
     })
 
-    /*const messagesMapped = userMessages?.map(message => { //call later after i create a message
+    const messagesMapped = userMessages?.length>0  && userMessages?.map(message => { //call later after i create a message
         return (<div key={message._id} onClick={() => handlePostClick(message._id)}>
-            <h4>Author: {message.author.username} | Recipient: {messagei.recipient.username}</h4>
-            <p>{messaage.updatedAt}</p>
+            <h4>Author: {message.users[0].username} | Recipient: {message.users[1].username}</h4>
+            <p>{message.updatedAt}</p>
         </div>
-    )})*/ 
+    )}) 
 
     if(loading){return <h1>Loading...</h1>}
 
@@ -95,6 +100,7 @@ function MessageHolders(){
 
         <div>
             {usersMapped}
+            {messagesMapped}
         </div>
         </div>
     )

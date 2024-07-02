@@ -54,6 +54,10 @@ function PostDetail(){
         .catch(error => console.error(`error updating post ${error}`))
     }
 
+    function handleLike(){
+        console.log("Liked!")
+    }
+
     const editItems = (
         <form onSubmit={handleSubmit} className={style.form}>
             <label htmlFor="message">Message</label>
@@ -75,6 +79,7 @@ function PostDetail(){
         </div>
         <button onClick={handleEdit}>Edit</button>
         <button onClick={handleDelete}>Delete</button>
+        <button onClick={handleLike}>Like</button>
         {status.showDelete && (
             <div>
             <p>Are you sure you want to delete? </p>
