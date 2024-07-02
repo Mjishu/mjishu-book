@@ -34,7 +34,12 @@ exports.find_one = async(req,res)=>{
 };
 
 exports.user_update = async(req,res)=>{
-    res.json({message:"updating a user"})
+    const userData ={
+        username: req.body.username,
+        email:req.body.email
+    }
+    await User.findByIdAndUpdate(req.params.id,userData)
+    res.json({message:"success"})
 };
 
 exports.user_delete = async(req,res)=>{
@@ -49,7 +54,6 @@ exports.user_current = async(req,res) => {
         if(!req.user){
             return res.status(401).json({message:"none"})
         }
-        console.log("finding current user")
         res.json(req.user);
     }catch(error){res.status(500).json({message:`error fetching current user ${error}`})}
 }

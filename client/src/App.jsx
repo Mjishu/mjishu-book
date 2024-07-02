@@ -33,7 +33,7 @@ function App() {
 
     function handleLogout(){
         fetch("/api/user/logout")
-        .then(res =>res.json()).then(data => console.log(data))
+        .then(res =>res.json()).then(data => data.message === "success" && location.reload())
         .catch(err => console.error(`error logging out ${err}`))
     }
 

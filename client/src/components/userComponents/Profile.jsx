@@ -41,6 +41,13 @@ function Profile(){
     function handleSubmit(e){
         e.preventDefault()
         console.log(editData)
+        const fetchParams = {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(editData)}
+        
+        fetch(`/api/user/find/${currentUser._id}/update`,fetchParams) //this call isnt being properly made? but submit calls func
+        .then(res=>res.json())
+        .then(data=> data.message==="success" && location.reload())
+        .catch(err=>console.error(`error updating user: ${err}`))
+        .finally(()=> setStatus(prev=>({...prev,showEdit:false})))
     }
 
     function handleChange(e){
