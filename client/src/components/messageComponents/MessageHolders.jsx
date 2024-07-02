@@ -45,7 +45,7 @@ function MessageHolders(){
 
     const usersMapped = allUsers?.map(user => {
         return(
-            <div key={user._id} onClick={() => handleUserClick(user._id)}>
+            <div key={user._id} onClick={() => handlePostClick(user._id)}>
                 <h3>{user.username}</h3>
             </div>
         )
