@@ -5,6 +5,10 @@ const postController = require("../controllers/postController");
 
 router.post("/create", postController.post_create);
 
+router.post("/find/:id/like", postController.post_like);
+
+router.post("/find/:id/unlike", postController.post_unlike)
+
 router.get("/find/user/:id", postController.current_user_posts);
 
 router.get("/find/:id", postController.find_one);

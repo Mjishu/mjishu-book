@@ -2,10 +2,13 @@ import React from "react";
 import Navbar from "../generalComponents/Navbar";
 import {useNavigate} from "react-router-dom";
 import style from "../../styling/postStyles/postDetail.module.css"
-
+import {useUser} from "../userComponents/UserContext.jsx"
+ 
 function PostDetail(){
+    const {currentUser} = useUser();
     const [postData, setPostData] = React.useState();
     const [loading, setLoading] = React.useState(true);
+    const[liked,setLiked] = React.useState(false); // set this value based on if currentUser._id in postData.likes
     const navigate = useNavigate();
     const[status,setStatus] = React.useState({
         showDelete : false,
@@ -14,7 +17,7 @@ function PostDetail(){
     const [editData,setEditData] = React.useState({
         message: "",
         image:"",
-    })
+    });
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
 
@@ -30,14 +33,6 @@ function PostDetail(){
     },[])
 
     if(loading){return <p>Loading... </p>}
-
-    function handleEdit(){
-        setStatus(prevStatus => ({...prevStatus,showEdit:true}))
-    }
-
-    function handleDelete(){
-        setStatus(prevStatus => ({...prevStatus,showDelete:true}))
-    }
 
     function handleChange(e){
         const {name,value} = e.target;
@@ -55,7 +50,25 @@ function PostDetail(){
     }
 
     function handleLike(){
-        console.log("Liked!")
+        const id = currentUser._id
+
+        fetch(`/api/post/find/${postData._id}/like`,{method:'POST',
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({id:id})})
+        .then(res => res.json())
+        .then(data => data.message === "success" ? setLiked(true) : console.log(data))
+        .catch(error => console.error(`error liking message: ${error}`))
+    }
+
+    function handleUnlike(){
+        const id = currentUser._id
+        fetch(`/api/post/find/${postData._id}/unlike`, {method:'POST',
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({id:id})
+        })
+        .then(res => res.json())
+        .then(data => data.message === "success" ? setLiked(false) :console.log(data))
+        .catch(error => console.error(`there was an error unliking the post: ${error}`))
     }
 
     const editItems = (
@@ -77,9 +90,13 @@ function PostDetail(){
             <h3>{postData?.author?.username}</h3>
             <p>{postData?.createdAt}</p>
         </div>
-        <button onClick={handleEdit}>Edit</button>
-        <button onClick={handleDelete}>Delete</button>
-        <button onClick={handleLike}>Like</button>
+        <button onClick={() => setStatus(prev =>({...prev, showEdit:true}))}>Edit</button>
+        <button onClick={() => setStatus(prev => ({...prev, showDelete:true}))}>Delete</button>
+        <div className={style.likeHolder}>
+            <p>{postData.likes.length} Likes</p>
+            <button onClick={handleLike}>Like</button>
+            <button onClick={handleUnlike}>Unlike</button>
+        </div>
         {status.showDelete && (
             <div>
             <p>Are you sure you want to delete? </p>

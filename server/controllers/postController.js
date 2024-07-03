@@ -41,3 +41,44 @@ exports.current_user_posts = async(req,res) => {
     const userPosts = await Post.find({author:userId}).populate("author likes").exec();
     res.json(userPosts);
 };
+
+exports.post_like = async(req,res)=>{
+    const postId = req.params.id;
+    let id;
+    if(req.user._id == req.body.id){ id = req.body.id}
+    else{return res.status(400).json({message:"failed"})}
+    try{ //check if id is already in likes
+        const post = await Post.findById(postId);
+
+        if(!post){return res.status(404).json({message:"no post found"})};
+
+        if(post.likes.includes(id)){return res.json({message:"you have already liked this post"})}
+
+        const updatedPost = await Post.updateOne({_id:postId},{$push:{likes:id}})
+
+        if(updatedPost.matchCount ===0){throw new Error("no matching message was found")}
+
+        res.json({message:"success"})
+    }catch(error){res.status(500).json({message: `error liking post: ${error}`})}
+}
+
+exports.post_unlike = async(req,res) => {
+    const postId = req.params.id;
+    let id;
+    //console.log(`type of req.user ${typeof req.user._id}`)//object
+    //console.log(`type of body user ${typeof req.body.id}`)//string
+    if(req.user._id == req.body.id){id = req.body.id}
+    else{return res.status(400).json({message:"failed"})}
+    try{
+        const post = await Post.findById(postId);
+
+        if(!post){return res.status(404).json({message:"no post found"})};
+
+        if(!post.likes.includes(id)){return res.json({message: "already unliked"})}
+
+        const updatedPost = await Post.updateOne({_id:postId}, {$pull:{likes:id}})
+
+        if(updatedPost.modifiedCount === 0 ){return res.status(404).json({message:"No match was found"})}
+        res.json({message:"success"})
+    }catch(error){res.status(500).json({message:"error unliking message"})}
+}

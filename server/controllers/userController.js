@@ -34,6 +34,9 @@ exports.find_one = async(req,res)=>{
 };
 
 exports.user_update = async(req,res)=>{
+    id = req.params.id;
+    if(id !== req.user._id){return res.status(500).json({message:"Wrong user"})}
+
     const userData ={
         username: req.body.username,
         email:req.body.email
