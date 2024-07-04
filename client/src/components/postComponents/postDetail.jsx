@@ -3,6 +3,7 @@ import Navbar from "../generalComponents/Navbar";
 import {useNavigate} from "react-router-dom";
 import style from "../../styling/postStyles/postDetail.module.css"
 import {useUser} from "../userComponents/UserContext.jsx"
+import DisplayComments from "../commentComponents/DisplayComments"; 
  
 function PostDetail(){
     const {currentUser} = useUser();
@@ -106,6 +107,7 @@ function PostDetail(){
             </button>
             </div>)}
         {status.showEdit && editItems}
+        <DisplayComments postid={postData._id} currentUser={currentUser}/>
         </div>
     )
 }
