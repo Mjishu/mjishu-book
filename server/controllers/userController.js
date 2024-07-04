@@ -128,6 +128,10 @@ exports.user_unfollowing = async(req,res)=>{
     const followerId = req.body.id;
     const followedId = req.params.id;
     try{
+        const follower = await User.findById(followerId);
+
+        if(!follower.following.includes(followedId)){return res.status(500).json({message: "You dont follow this person"})}
+
         const [updatedFollower, updatedFollowed] = await Promise.all([
             User.findByIdAndUpdate(
                 followerId,{$pull : {following:followedId}}
