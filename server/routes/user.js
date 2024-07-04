@@ -21,4 +21,8 @@ router.post("/sign-in", userController.user_sign_in);
 
 router.get("/logout", userController.user_sign_out);
 
+router.post("/find/:id/follow", userController.user_following);
+
+router.post("/find/:id/unfollow", userController.user_unfollowing)
+
 module.exports = router;

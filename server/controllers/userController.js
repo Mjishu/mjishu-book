@@ -96,3 +96,51 @@ exports.user_sign_out = async(req,res,next)=>{
     }catch(error){
     res.status(500).json({message:`error logging out: ${error}`})}
 };
+
+exports.user_following = async(req,res)=>{
+    const followerId = req.body.id;
+    const followedId = req.params.id;
+    console.log(followerId, followedId)
+    try{
+        const [follower,followed] = await Promise.all([
+            User.findById(followerId),
+            User.findById(followedId)
+        ])
+
+        if(!follower || !followed){return res.status(404).json({message:`user was not found`})}
+        if(follower.following.includes(followedId)){return res.status(500).json({message:`you already follow this user`})}
+
+        const [updatedFollower, updatedFollowed] = await Promise.all([
+            User.findByIdAndUpdate(
+                followerId,{$push : {following:followedId}}
+            ),
+            User.findByIdAndUpdate(
+                followedId, {$push: {followers:followerId}}
+            )
+        ])
+    
+        if(!updatedFollower || !updatedFollowed){return res.status(404).json({message:`error updating users`})}
+        res.json({message:"success"})
+    }catch(error){res.status(500).json({message:`error following user: ${error}`})}
+}
+
+exports.user_unfollowing = async(req,res)=>{
+    const followerId = req.body.id;
+    const followedId = req.params.id;
+    try{
+        const [updatedFollower, updatedFollowed] = await Promise.all([
+            User.findByIdAndUpdate(
+                followerId,{$pull : {following:followedId}}
+            ),
+            User.findByIdAndUpdate(
+                followedId, {$pull: {followers:followerId}}
+            )
+        ])
+    
+        if(!updatedFollower || !updatedFollowed){return res.status(404).json({message:`error updating users`})}
+        res.json({message:"success"})
+    }catch(error){
+        res.status(500).json({message:`there was an error with following :${error}`})
+    }
+}
+

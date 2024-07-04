@@ -42,7 +42,7 @@ function App() {
 
     function handleLogout(){
         fetch("/api/user/logout")
-        .then(res =>res.json())
+        .then(res =>res.json()) 
         .then(data => {
             setCurrentUser(null);
             data.message === "success" && navigate("/auth");
@@ -59,11 +59,23 @@ function App() {
     }
 
     function follow(id){
-        console.log(`${currentUser._id} is now following ${id}`)
+        console.log("follow")
+        fetch(`/api/user/find/${id}/follow`,
+            {method:"POST",headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({id:currentUser._id})})
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(`error following user: ${error}`))
     }
 
     function unfollow(id){
-        console.log(`${currentUser._id} is now unfollowing ${id}`)
+        console.log('unfollow')
+        fetch(`/api/user/find/${id}/unfollow`,{method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({id:currentUser._id})})
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(`error following user: ${error}`))
     }
 
     const allPostsMapped = allPosts?.map(post => {
@@ -76,8 +88,8 @@ function App() {
 
     const allUsersMapped = allUsers?.map(user=>{
         return(
-            <div key={user._id} onClick={() => handleUserClick(user._id)}>
-                <h5>{user.username}</h5>
+            <div key={user._id} >
+                <h5 onClick={() => handleUserClick(user._id)}>{user.username}</h5>
                 <button onClick={() => follow(user._id)}>Follow</button>
                 <button onClick={() => unfollow(user._id)}>Unfollow</button>
             </div>
@@ -95,6 +107,7 @@ function App() {
         <h1>Hello {currentUser?.username}</h1>
         {allPostsMapped}
         {allUsersMapped}
+        <p>You follow {currentUser?.following.length} people and {currentUser?.followers.length} people follow you</p>
         <button onClick={handleLogout}>Logout</button>
         </div>
         </div>
