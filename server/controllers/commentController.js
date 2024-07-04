@@ -1,4 +1,4 @@
-const Comment = require("../models/message");
+const Comment = require("../models/comment");
 const {ObjectId} = require("mongodb")
 
 exports.comment_create = async(req,res) => {
@@ -10,9 +10,8 @@ exports.comment_create = async(req,res) => {
             author:req.body.id,
             post:postid
         })
-        const saveComment = await newComment.save();
-
-        if(saveComment){res.json({message:"success"})}
+        await newComment.save();
+        res.json({message:"success"})
     }
     catch(error){res.status(500).json({message:`there was an error creating a comment: ${error}`})}
 };
@@ -43,7 +42,7 @@ exports.comment_delete = async(req,res) => {
 exports.find_comments = async(req,res) =>{ //returns an error? maybe client side?
     postId = req.params.postid
     try{
-        const foundComments = await Comment.find({post:postId}).populate("author").exec()
+        const foundComments = await Comment.find({post:postId}).populate("author").exec()//says author not in schema
 
         if(!foundComments){return res.status(404).json({message:`comments not found`})}
 
