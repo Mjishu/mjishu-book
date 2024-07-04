@@ -28,9 +28,6 @@ function MessageHolders(){
         })
     },[currentUser]);
 
-    React.useEffect(() => console.log(`User messages : ${userMessages}`), [userMessages])
-
-;
      function handlePostClick(id){
          navigate(`/messages/${id}`)
     }

@@ -1,11 +1,13 @@
 import React from "react";
 import MessageBody from "./MessageBody";
 import Navbar from "../generalComponents/Navbar"
+import {useNavigate} from "react-router-dom"
 
 function MessageId(){
     const [messageData,setMessageData] = React.useState();
     const [loading,setLoading] = React.useState(true);
-    const [deleteMessage,setDeleteMessage] = React.useState(false) 
+    const [deleteMessage,setDeleteMessage] = React.useState(false);
+    const navigate = useNavigate();
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
 
@@ -27,9 +29,15 @@ function MessageId(){
             </div>
     })
 
-    function handleDeleteSubmit(e){
+    function handleDeleteSubmit(e){ //not making api call?
         e.preventDefault()
-        console.log("deleting")
+
+        fetch(`/api/message/find/${id}/delete`,{method:"DELETE", headers:{"Content-Type":"application/json"}})
+        .then(res => res.json())
+        .then(data => data.message === "success" ? navigate("/messages") : console.log(data))
+        .catch(error => console.error(`there was an error trying to delete message: $(error)`))
+
+        setDeleteMessage(false)
     }
 
     const deleteMessagePopup = (
@@ -37,7 +45,7 @@ function MessageId(){
         <form onSubmit={handleDeleteSubmit}>
             <p>Are you sure you want to delete?</p>
             <button onClick={() => setDeleteMessage(false)}>Cancel</button>
-            <button>Delete</button>
+            <button >Delete</button>
         </form>
         </div>
     )

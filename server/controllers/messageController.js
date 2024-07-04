@@ -26,7 +26,9 @@ exports.find_all = async(req,res) =>{ //idk if i need this one because it doesnt
 exports.message_delete = async(req,res)=>{
     const id = req.params.id
     try{
-        Message.findByIdAndDelete(id);
+        const deletedMessage =await Message.findByIdAndDelete(id);
+
+        if(!deletedMessage){return res.status(404).json({message:`message not found or already deleted`})}
         res.json({message:"success"})
     }catch(err){res.status(500).json({message:`error deleting message: ${err}`})}
 };
