@@ -7,13 +7,17 @@ import {useNavigate} from "react-router-dom"
 function Profile(){
     const {currentUser,isLoading} = useUser();
     const [loading,setLoading] = React.useState(true);
-    const [postUser,setPostUser] = React.useState();
+    const [profileUser,setProfileUser] = React.useState();
     const [userPosts,setUserPosts] = React.useState();
     const [status,setStatus] = React.useState({showEdit:false,})
     const [editData,setEditData] = React.useState({
         username:"",
         email:""
     });
+    const [followStatus,setFollowStatus] = React.useState({
+        showFollowers: false,
+        showFollowing: false
+    })
     const navigate = useNavigate();
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
@@ -27,13 +31,15 @@ function Profile(){
         fetch(`/api/user/find/${id}`)
         .then(res => res.json())
         .then(data => {
-            setPostUser(data)
+            setProfileUser(data)
             setLoading(false)
         })
         .catch(error => console.error(`error fetching post user: ${error}`))
-
-        setEditData(prevData =>({...prevData, username:currentUser?.username, email:currentUser?.email}))
     },[id]);
+
+    React.useEffect(()=>{
+        setEditData(prevData =>({...prevData, username:profileUser?.username, email:profileUser?.email}))
+    },[profileUser])
 
     function handlePostClick(id){
         navigate(`/post/${id}`)
@@ -79,18 +85,69 @@ function Profile(){
         </div>
     )
 
+    function unfollowUser(id){
+        fetch(`/api/user/find/${id}/unfollow`,{method:"POST",headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({id:profileUser._id})})
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(`there was an error trying to unfollow user: ${error}`))
+    }
+
+    function ShowsFollowing(){
+        const followingMapped = profileUser.following.map(user => {
+            return (
+                <div key={user._id}>
+                    <h6>{user.username}</h6>
+                {currentUser._id === profileUser._id && <button onClick={() => unfollowUser(user._id)}>unfollow</button>}
+                </div>
+            )
+        })
+        return (
+            <div>
+                <div className={style.followInformation}>
+                {followingMapped}
+            </div>
+            <button onClick={()=> setFollowStatus(prev=>({...prev,showFollowing:false}))}>Close</button>
+            </div>
+        )
+    }
+
+    function ShowsFollowers(){
+        const followersMapped = profileUser.followers.map(user =>{
+            return (
+                <div key={user._id}>
+                    <h6>{user.username}</h6>
+                </div>
+            )
+        });
+        return (
+            <div>
+                <div className={style.followInformation}>
+                    {followersMapped}
+                </div>
+                <button onClick={() => setFollowStatus(prev=>({...prev,showFollowers:false}))}>Close</button>
+            </div>
+        )
+    }
+
     if(loading && isLoading){return <h1>Loading...</h1>}
 
     return(
         <div>
             <Navbar/>
-            <h1>welcome {postUser?.username}</h1>
+            <h1>welcome {profileUser?.username}</h1>
+            <div className={style.followHolder}>
+                <h5 onClick={() => setFollowStatus(prev =>({...prev, showFollowers:true}))}>Followers</h5>
+                <h5 onClick={() => setFollowStatus(prev => ({...prev,showFollowing:true}))}>Following</h5>
+            </div>
             <div className={style.postHolder}>
             <h2>Posts</h2>
             {userPosts ? postsMapped : <p>User has no posts</p>}
             </div>
-            {currentUser._id === postUser?._id &&<button onClick={() => setStatus(prevStat=>({...prevStat,showEdit:true}))}>Edit Profile</button>}
+            {currentUser?._id === profileUser?._id &&<button onClick={() => setStatus(prevStat=>({...prevStat,showEdit:true}))}>Edit Profile</button>}
             {status.showEdit && editInformation}
+            {followStatus.showFollowing && ShowsFollowing()}
+            {followStatus.showFollowers && ShowsFollowers()}
         </div>
     )
 }

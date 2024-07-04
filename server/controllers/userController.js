@@ -48,11 +48,15 @@ exports.user_update = async(req,res)=>{
 exports.user_delete = async(req,res)=>{
     const id = req.params.id;
     try{
-        await User.findByIdAndDelete(id)
+        const deletedUser = await User.findByIdAndDelete(id)
+
+        if(!deletedUser){return res.status(404).json({message:`user not found!`})}
+
+        res.json({message:`success`})
     }catch(error){res.status(500).json({message:`error deleting user ${error}`})}
 };
 
-exports.user_current = async(req,res) => {
+exports.user_current = async(req,res) => { //if i need to populate, find User by req.user._id
     try{
         if(!req.user){
             return res.status(401).json({message:"none"})
@@ -63,7 +67,7 @@ exports.user_current = async(req,res) => {
 
 exports.user_sign_in = async(req,res,next)=>{
     try{
-        passport.authenticate("local", (err,user,info) =>{ //i dont think its making the call?
+        passport.authenticate("local", (err,user,info) =>{ 
             if(err){
                 console.log(err);
                 const error = new Error(`Error trying to authenticate: ${err}`);
@@ -127,6 +131,8 @@ exports.user_following = async(req,res)=>{
 exports.user_unfollowing = async(req,res)=>{
     const followerId = req.body.id;
     const followedId = req.params.id;
+    console.log(`Profile user: ${followerId} | CurrentUser: ${req.user._id}`)
+    if(req.body.id != req.user._id){return res.status(500).json({message:"You dont seem to be the right user"})}
     try{
         const follower = await User.findById(followerId);
 

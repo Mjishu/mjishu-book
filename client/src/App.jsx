@@ -1,8 +1,9 @@
 import React from 'react';
 import Navbar from "./components/generalComponents/Navbar";
-import {Link,useNavigate} from "react-router-dom";
+import {Link,useNavigate, useLocation} from "react-router-dom";
 import Post from "./components/postComponents/Post.jsx"
 import {useUser} from "./components/userComponents/UserContext.jsx"
+
 
 function App() {
     const {currentUser, setCurrentUser,isLoading} = useUser();
@@ -12,8 +13,9 @@ function App() {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        if(!isLoading){
+        if(!isLoading ){ //user signed in on signup but since this is already at false,thinks usre not exist
             if(!currentUser || currentUser.message === "none"){
+                console.log("we have to redirect to auth:(")
                 navigate("/auth")
             }else{
                 fetchPosts();
@@ -86,7 +88,7 @@ function App() {
         )
     })
 
-    const allUsersMapped = allUsers?.map(user=>{
+    const allUsersMapped = allUsers?.filter(user => !currentUser.following.includes(user._id)).map(user=>{
         return(
             <div key={user._id} >
                 <h5 onClick={() => handleUserClick(user._id)}>{user.username}</h5>
