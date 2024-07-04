@@ -11,6 +11,7 @@ function App() {
     const [allUsers,setAllUsers] = React.useState();
     const [allPosts,setAllPosts]= React.useState();
     const navigate = useNavigate();
+    const [showFollowing, setShowFollowing] = React.useState(false);
 
     React.useEffect(() => {
         if(!isLoading ){ //user signed in on signup but since this is already at false,thinks usre not exist
@@ -88,6 +89,16 @@ function App() {
         )
     })
 
+    const followPostsMapped = allPosts?.filter(post => currentUser.following.includes(post.author._id)).map(post =>{
+        return (
+            <div key={post._id}>
+                <p>{post.message}</p>
+                <h6>{post.author.username}</h6>
+                <p>{post.createdAt}</p>
+            </div>
+        )
+    })
+
     const allUsersMapped = allUsers?.filter(user => !currentUser.following.includes(user._id)).map(user=>{
         return(
             <div key={user._id} >
@@ -98,6 +109,7 @@ function App() {
         )
     })
 
+
     if(postsLoading || isLoading){
         return <p>Loading...</p>
     }
@@ -107,7 +119,11 @@ function App() {
         <Navbar />
         <div>
         <h1>Hello {currentUser?.username}</h1>
-        {allPostsMapped}
+        <div>
+        <button onClick={() => setShowFollowing(false)}>Explore</button>
+        <button onClick={() => setShowFollowing(true)}>Following</button>
+        </div>
+        {showFollowing ? followPostsMapped :allPostsMapped}
         {allUsersMapped}
         <p>You follow {currentUser?.following.length} people and {currentUser?.followers.length} people follow you</p>
         <button onClick={handleLogout}>Logout</button>
