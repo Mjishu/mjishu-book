@@ -84,8 +84,9 @@ function PostDetail(){
     )
 
     return (
-        <div>
+        <div className="content">
         <Navbar/>
+        <div>
         <div>
             <p>{postData?.message}</p>
             <h3>{postData?.author?.username}</h3>
@@ -108,6 +109,7 @@ function PostDetail(){
             </div>)}
         {status.showEdit && editItems}
         <DisplayComments postid={postData._id} currentUser={currentUser}/>
+        </div>
         </div>
     )
 }

@@ -38,7 +38,7 @@ function CreatePost(){
     }
 
     return(
-        <div>
+        <div className="content">
         <Navbar/>
         <form autoComplete="off" onSubmit={handleSubmit} className={style.form}>
             <label htmlFor="message">Message</label>

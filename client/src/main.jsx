@@ -1,8 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import routes from "../routes.jsx"
-import {UserProvider} from "./components/userComponents/UserContext.jsx"
+import routes from "../routes.jsx";
+import "./index.css";
+import {UserProvider} from "./components/userComponents/UserContext.jsx";
+
 
 const wrappedRoutes = routes.map(route => ({
     ...route,

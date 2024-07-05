@@ -1,0 +1,28 @@
+
+:root{
+    --primary: 130 ,14%, 49%;
+    --light: 144,31%,75%;
+    --off-white: 54,19%,97%;
+    --black: 112,8%,8%;
+    --black-75: 112,8%,8%,0.75;
+    --black-50: 112,8%,8%,0.5;
+    --black-30: 112,8%,8%,0.3;
+    --black-10: 112,8%,8%,0.1;
+}
+
+body{
+    margin:0;
+    padding:0;
+    color:hsl(var(--black))
+}
+
+button{
+    font: inherit;
+    color:inherit;
+}
+
+.content{
+    display:grid;
+    grid-template-columns: 6.75rem 1fr;
+}
+

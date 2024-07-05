@@ -51,12 +51,14 @@ function MessageId(){
     )
 
     return(
-        <div>
+        <div className="content">
         <Navbar/>
+        <div>
             {usersMapped}
             <MessageBody body={messageData.body} id={messageData._id}/> 
             <button onClick={() => setDeleteMessage(true)}>Delete</button>
             {deleteMessage && deleteMessagePopup}
+        </div>
         </div>
     )
 }

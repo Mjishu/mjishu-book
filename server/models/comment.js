@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema; //this isnt being created in the db for some reeason
 
 const CommentSchema = new Schema({
     author:{type:Schema.Types.ObjectId, ref:"User", required:true},

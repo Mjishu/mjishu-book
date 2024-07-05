@@ -3,6 +3,7 @@ import Navbar from "./components/generalComponents/Navbar";
 import {Link,useNavigate, useLocation} from "react-router-dom";
 import Post from "./components/postComponents/Post.jsx"
 import {useUser} from "./components/userComponents/UserContext.jsx"
+import style from "./styling/generalStyles/home.module.css"
 
 
 function App() {
@@ -43,15 +44,6 @@ function App() {
     }
 
 
-    function handleLogout(){
-        fetch("/api/user/logout")
-        .then(res =>res.json()) 
-        .then(data => {
-            setCurrentUser(null);
-            data.message === "success" && navigate("/auth");
-        })
-        .catch(err => console.error(`error logging out ${err}`))
-    }
 
     function handlePostClick(id){
         navigate(`/post/${id}`)
@@ -85,26 +77,32 @@ function App() {
         const formatedDate = post.createdAt
 
         return (
-            <Post key={post._id} author={post.author.username} body={post.message} time={formatedDate} id={post._id} handleClick={handlePostClick}/>
+            <Post currentUser={currentUser} key={post._id}
+            author={post.author.username} body={post.message}
+            time={formatedDate} id={post._id} handleClick={handlePostClick}
+            likes={post.likes}
+
+            />
         )
     })
 
     const followPostsMapped = allPosts?.filter(post => currentUser.following.includes(post.author._id)).map(post =>{
+        const formatedDate = post.CreatedAt
         return (
-            <div key={post._id}>
-                <p>{post.message}</p>
-                <h6>{post.author.username}</h6>
-                <p>{post.createdAt}</p>
-            </div>
+            <Post currentUser={currentUser} key={post._id}
+            author={post.author.username} body={post.message}
+            time={formatedDate} id={post._id} handleClick={handlePostClick}
+            likes={post.likes}
+            
+            />
         )
     })
 
     const allUsersMapped = allUsers?.filter(user => !currentUser.following.includes(user._id)).map(user=>{
         return(
-            <div key={user._id} >
+            <div key={user._id} className={style.userMapped}>
                 <h5 onClick={() => handleUserClick(user._id)}>{user.username}</h5>
                 <button onClick={() => follow(user._id)}>Follow</button>
-                <button onClick={() => unfollow(user._id)}>Unfollow</button>
             </div>
         )
     })
@@ -115,18 +113,20 @@ function App() {
     }
 
     return (
-        <div>
+        <div className="content">
         <Navbar />
+        <div className={style.homeBody}>
+        <div className={style.posts}>
         <div>
-        <h1>Hello {currentUser?.username}</h1>
-        <div>
-        <button onClick={() => setShowFollowing(false)}>Explore</button>
-        <button onClick={() => setShowFollowing(true)}>Following</button>
+            <button className={style.postOption} onClick={() => setShowFollowing(false)}>Explore</button>
+            <button className={style.postOption} onClick={() => setShowFollowing(true)}>Following</button>
         </div>
         {showFollowing ? followPostsMapped :allPostsMapped}
-        {allUsersMapped}
-        <p>You follow {currentUser?.following.length} people and {currentUser?.followers.length} people follow you</p>
-        <button onClick={handleLogout}>Logout</button>
+        </div>
+        <div className={style.newUsers}>
+            <h6 className={style.newUsersTitle}>New Users </h6>
+            {allUsersMapped}
+        </div>
         </div>
         </div>
     )

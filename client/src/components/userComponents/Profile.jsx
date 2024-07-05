@@ -129,12 +129,22 @@ function Profile(){
             </div>
         )
     }
+    function handleLogout(){
+        fetch("/api/user/logout")
+        .then(res =>res.json()) 
+        .then(data => {
+            setCurrentUser(null);
+            data.message === "success" && navigate("/auth");
+        })
+        .catch(err => console.error(`error logging out ${err}`))
+    }
 
     if(loading && isLoading){return <h1>Loading...</h1>}
 
     return(
-        <div>
+        <div className="content">
             <Navbar/>
+        <div>
             <h1>welcome {profileUser?.username}</h1>
             <div className={style.followHolder}>
                 <h5 onClick={() => setFollowStatus(prev =>({...prev, showFollowers:true}))}>Followers</h5>
@@ -148,6 +158,8 @@ function Profile(){
             {status.showEdit && editInformation}
             {followStatus.showFollowing && ShowsFollowing()}
             {followStatus.showFollowers && ShowsFollowers()}
+            <button onClick={handleLogout}>Logout</button>
+        </div>
         </div>
     )
 }

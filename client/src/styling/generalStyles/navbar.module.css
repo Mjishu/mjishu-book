@@ -1,7 +1,12 @@
+
 .navbar{
     display:flex;
-    flex-direction:row;
-    justify-content:space-around;
+    flex-direction:column;
+    justify-content:space-between;
+    height:100vh;
+    width:5.5rem;
+    border-right: 2px solid black;
+    align-items:center;
 }
 
 .navElement{
@@ -14,4 +19,24 @@
 
 .navElement:hover{
     color: blue;
+}
+
+.pageLinks{
+    display:flex;
+    flex-direction:column;
+    height:16.25rem;
+    width:fit-content;
+    justify-content:space-between;
+}
+
+img{
+    width:2.55rem;
+}
+
+.logo{
+    margin-top:1.75rem;
+}
+
+.profile{
+    margin-bottom: 1.75rem;
 }

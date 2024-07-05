@@ -10,10 +10,13 @@ function Navbar(){
 
     return (
         <div className={style.navbar}>
-            <Link className={style.navElement} to="/">Home</Link>
-            <Link className={style.navElement} to="/messages">Messages</Link>
-            <Link className={style.navElement} to="/post/create">Post</Link>
-            <Link className={style.navElement} to={`/profile/${currentUser?._id}`}>Profile</Link>
+            <img src="" alt="logo" className={style.logo}/>
+            <div className={style.pageLinks}>
+            <Link className={style.navElement} to="/"><img alt="home" src="/icons/house-blank.svg"/></Link>
+            <Link className={style.navElement} to="/messages"><img alt="messages" src="/icons/messages.svg"/></Link>
+            <Link className={style.navElement} to="/post/create"><img alt="Post" src="/icons/picture.svg"/></Link>
+            </div>
+            <Link className={`${style.navElement} ${style.profile}`} to={`/profile/${currentUser?._id}`}><img alt="Profile" src="/icons/user.svg"/></Link>
         </div>
     )
 }
