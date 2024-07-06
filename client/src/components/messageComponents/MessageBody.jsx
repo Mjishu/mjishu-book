@@ -1,6 +1,7 @@
 import React from "react";
 import {format} from "date-fns";
-import {useUser} from "../userComponents/UserContext.jsx"
+import {useUser} from "../userComponents/UserContext.jsx";
+import style from "../../styling/messageStyles/messagedisplay.module.css"
 
 function MessageBody(props){
     const {currentUser} = useUser();
@@ -25,7 +26,7 @@ function MessageBody(props){
         //if (message.author.username === loggedInUser.username){
          //   isCurrentUser = true;}
 
-        return (<div key={props.id}>
+        return (<div key={props.id} className={style.messagesMapped}>
             <h6>{message.author.username}</h6>
             <p>{message.message}</p>
             <p>{formatedTime}</p>
@@ -59,8 +60,8 @@ function MessageBody(props){
         <form onSubmit={handleSubmit} autoComplete="off">
             <label htmlFor="message">Message</label>
             <input type="text" name="message" onChange={handleChange} value={messageBody.message}/>
-            <button>Send</button>
-        </form>
+            <button className={`beautiful-shadow-1`}>Send</button>
+        </form> 
         </div>
     )
 }

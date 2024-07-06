@@ -1,0 +1,70 @@
+.content{
+    display:grid;
+    grid-template-columns: 6.75rem 23.75rem 1fr;
+}
+
+.userMessagesHolder{
+    border-right: 1px solid hsl(var(--black-30));
+}
+
+/*Message display area*/
+
+.noMessageOpened{
+    align-items:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+.noMessageOpened h4{
+    text-align:center;
+}
+
+.noMessageOpened button{
+    color: hsl(var(--off-white));
+    background-color: hsl(var(--primary));
+    border:none;
+    border-radius:10px;
+    height:3.25rem;
+    width:16.25rem;
+}
+.noMessageOpened button:hover{
+    color: hsl(var(--primary));
+    background-color:#fff;
+}
+
+/*Message subInfo*/
+
+.messagePreviewHolder{
+    display:grid;
+    grid-template-columns:3.5rem 1fr 4rem ;
+    align-items:center;
+    font-size:1rem;
+}
+.imagePlaceholder{
+    border-radius:50px;
+    width:40px;
+    height:40px;
+    background-color: hsl(var(--black-30))
+}
+
+.previewTextDetails{
+    display:flex;
+    flex-direction:column;
+    margin:0;
+    padding:0;
+}
+
+.previewTextDetails p{
+    color: hsl(var(--black-50));
+    font-size:14;
+}
+
+.previewTextDetails *{
+    padding:0;
+    margin:0;
+}
+
+.messagePreviewTimestamp{
+    color: hsl(var(--black-50));
+    width:4rem;
+}

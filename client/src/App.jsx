@@ -1,9 +1,10 @@
 import React from 'react';
 import Navbar from "./components/generalComponents/Navbar";
 import {Link,useNavigate, useLocation} from "react-router-dom";
-import Post from "./components/postComponents/Post.jsx"
-import {useUser} from "./components/userComponents/UserContext.jsx"
-import style from "./styling/generalStyles/home.module.css"
+import Post from "./components/postComponents/Post.jsx";
+import {useUser} from "./components/userComponents/UserContext.jsx";
+import style from "./styling/generalStyles/home.module.css";
+import {format} from "date-fns";
 
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
         if(!isLoading ){ //user signed in on signup but since this is already at false,thinks usre not exist
             if(!currentUser || currentUser.message === "none"){
                 console.log("we have to redirect to auth:(")
-                navigate("/auth")
+                navigate("/login")
             }else{
                 fetchPosts();
                 fetchAllUsers();
@@ -74,7 +75,7 @@ function App() {
     }
 
     const allPostsMapped = allPosts?.map(post => {
-        const formatedDate = post.createdAt
+        const formatedDate = format(post.createdAt ,"do MMMM")
 
         return (
             <Post currentUser={currentUser} key={post._id}
@@ -87,7 +88,7 @@ function App() {
     })
 
     const followPostsMapped = allPosts?.filter(post => currentUser.following.includes(post.author._id)).map(post =>{
-        const formatedDate = post.CreatedAt
+        const formatedDate = format(post.createdAt, "do MMMM")
         return (
             <Post currentUser={currentUser} key={post._id}
             author={post.author.username} body={post.message}
@@ -117,11 +118,13 @@ function App() {
         <Navbar />
         <div className={style.homeBody}>
         <div className={style.posts}>
-        <div>
-            <button className={style.postOption} onClick={() => setShowFollowing(false)}>Explore</button>
-            <button className={style.postOption} onClick={() => setShowFollowing(true)}>Following</button>
+        <div className={style.postOptionHolder}>
+            <button className={style.postOptionSelect} onClick={() => setShowFollowing(false)}>Explore</button>
+            <button className={style.postOptionSelect} onClick={() => setShowFollowing(true)}>Following</button>
         </div>
+        <div className={style.postOption}>
         {showFollowing ? followPostsMapped :allPostsMapped}
+        </div>
         </div>
         <div className={style.newUsers}>
             <h6 className={style.newUsersTitle}>New Users </h6>

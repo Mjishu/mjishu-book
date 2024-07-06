@@ -1,7 +1,9 @@
 import React from "react";
 import Navbar from "../generalComponents/Navbar";
 import {useNavigate} from "react-router-dom";
-import {useUser} from "../userComponents/UserContext.jsx"
+import {useUser} from "../userComponents/UserContext.jsx";
+import UserMessages from "./UserMessages";
+import style from "../../styling/messageStyles/messagedisplay.module.css";
 
 function MessageHolders(){
     const {currentUser,isLoading} = useUser();
@@ -82,25 +84,23 @@ function MessageHolders(){
         )
     })
 
-    const messagesMapped = userMessages?.length>0  && userMessages?.map(message => { //call later after i create a message
-        return (<div key={message._id} onClick={() => handlePostClick(message._id)}>
-            <h4>Author: {message.users[0].username} | Recipient: {message.users[1].username}</h4>
-            <p>{message.updatedAt}</p>
+    const noneOpened = (
+        <div className={style.noMessageOpened}>
+            <h4>Your Messages <br /> go here</h4>
+            <button className="beautiful-shadow-1">Send Message</button>
         </div>
-    )}) 
+    )
 
     if(loading){return <h1>Loading...</h1>}
 
     return (
-        <div className="content">
+        <div className={style.content}>
         <Navbar />
-
-        <div>
-            {usersMapped}
-            {messagesMapped}
-        </div>
+        {userMessages?.length > 0 ? <UserMessages allMessages={userMessages} handleClick={handlePostClick} currentUser={currentUser}/> : <h3>No Messages</h3>}
+        {noneOpened}
         </div>
     )
 }
+//need to check if message is open show message else show the last div
 
 export default MessageHolders

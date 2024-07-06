@@ -7,11 +7,22 @@
 /*-----------------------*/
 /*-----Post styling----*/
 /*-----------------------*/
+.posts{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
 
-.postOption{
+.postOptionSelect{
     background:transparent;
     border:none;
     font-weight:700;
+}
+
+.postOptionHolder{
+    display:flex;
+    flex-direction:row;
+    gap:8.75rem;
 }
 
 .likesImage{
@@ -23,9 +34,25 @@
     border:none;
 }
 
+.subPost{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+}
 .postLikes{
     display:flex;
     flex-direction:row;
+}
+
+.postElement{
+    width:29.125rem;
+}
+
+.postTime{
+    color: hsl(var(--black-30))
+}
+.author{
+    color:hsl(var(--black-75))
 }
 
 /*-----------------------*/

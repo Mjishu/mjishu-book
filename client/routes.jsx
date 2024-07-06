@@ -16,10 +16,6 @@ const routes = [
         errorElement:<Error/>
     },
     {
-        path:"auth",
-        element: <User/>
-    },
-    {
         path:"/login",
         element:<LogIn/>
     },

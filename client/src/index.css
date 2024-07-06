@@ -13,12 +13,24 @@
 body{
     margin:0;
     padding:0;
-    color:hsl(var(--black))
+    color:hsl(var(--black));
+    background-color:hsl(var(--off-white));
+}
+
+.beautiful-shadow-1{
+    box-shadow: 0 43px 12px #00000000,
+    0 27px 11px #00000001,
+    0 15px 9px #00000005,
+    0 7px 7px #00000009,
+    0 2px 4px #00000010;
 }
 
 button{
     font: inherit;
     color:inherit;
+    background:transparent;
+    border:1px solid black;
+    border-radius: 5px;
 }
 
 .content{

@@ -1,7 +1,9 @@
 import React from "react";
 import MessageBody from "./MessageBody";
-import Navbar from "../generalComponents/Navbar"
-import {useNavigate} from "react-router-dom"
+import Navbar from "../generalComponents/Navbar";
+import {useNavigate} from "react-router-dom";
+import UserMessages from "./UserMessages";
+import style from "../../styling/messageStyles/messagedisplay.module.css"
 
 function MessageId(){
     const [messageData,setMessageData] = React.useState();
@@ -51,8 +53,9 @@ function MessageId(){
     )
 
     return(
-        <div className="content">
+        <div className={style.content}>
         <Navbar/>
+        {/*userMessages?.length > 0 ? <UserMessages allMessages={userMessages} handleClick={handlePostClick} currentUser={currentUser}/> : <h3>No Messages</h3>*/}
         <div>
             {usersMapped}
             <MessageBody body={messageData.body} id={messageData._id}/> 
