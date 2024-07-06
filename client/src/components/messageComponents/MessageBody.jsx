@@ -26,7 +26,7 @@ function MessageBody(props){
         //if (message.author.username === loggedInUser.username){
          //   isCurrentUser = true;}
 
-        return (<div key={props.id} className={style.messagesMapped}>
+        return (<div key={message._id} className={style.messagesMapped}>
             <h6>{message.author.username}</h6>
             <p>{message.message}</p>
             <p>{formatedTime}</p>

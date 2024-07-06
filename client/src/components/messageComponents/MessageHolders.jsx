@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../generalComponents/Navbar";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, Outlet} from "react-router-dom";
 import {useUser} from "../userComponents/UserContext.jsx";
 import UserMessages from "./UserMessages";
 import style from "../../styling/messageStyles/messagedisplay.module.css";
@@ -10,7 +10,9 @@ function MessageHolders(){
     const [userMessages, setUserMessages] = React.useState([]);
     const [allUsers, setAllUsers] = React.useState();
     const [loading, setLoading] = React.useState(true);
-    const navigate = useNavigate();
+    const [messageOpened, setMessageOpened] = React.useState(false);
+    const navigate = useNavigate(); 
+    const [findUsers,setFindUsers] = React.useState(false);
 
     React.useEffect(()=>{
         currentUser && fetch(`/api/message/find/user/${currentUser._id}`)//set this to user id but need to do useContext first
@@ -51,7 +53,7 @@ function MessageHolders(){
         navigate(`/messages/${id}`)
     }
 
-    function handleUserClick(id){ //Need to if message doesnt exist between the 2 ids, create message, else open message
+    function handleUserClick(id){ 
         let messageExists =false;
         let postId;
         for(const message of userMessages){
@@ -84,12 +86,6 @@ function MessageHolders(){
         )
     })
 
-    const noneOpened = (
-        <div className={style.noMessageOpened}>
-            <h4>Your Messages <br /> go here</h4>
-            <button className="beautiful-shadow-1">Send Message</button>
-        </div>
-    )
 
     if(loading){return <h1>Loading...</h1>}
 
@@ -97,7 +93,8 @@ function MessageHolders(){
         <div className={style.content}>
         <Navbar />
         {userMessages?.length > 0 ? <UserMessages allMessages={userMessages} handleClick={handlePostClick} currentUser={currentUser}/> : <h3>No Messages</h3>}
-        {noneOpened}
+        <Outlet context={[findUsers, setFindUsers]}/>
+        {/*if message not opened? <Outlet/> else: noneOpened*/}
         </div>
     )
 }

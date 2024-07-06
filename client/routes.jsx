@@ -7,7 +7,8 @@ import CreatePost from "./src/components/postComponents/createPost";
 import PostDetail from "./src/components/postComponents/postDetail";
 import Profile from "./src/components/userComponents/Profile";
 import MessageHolders from "./src/components/messageComponents/MessageHolders";
-import MessageId from "./src/components/messageComponents/MessageId";
+import MessageId from "./src/components/messageComponents/MessageId"; 
+import DefaultDisplay from "./src/components/messageComponents/DefaultDisplay"
 
 const routes = [
     {
@@ -36,12 +37,12 @@ const routes = [
     },
     {
         path:"/messages",
-        element:<MessageHolders/>
+        element:<MessageHolders/>,
+        children:[
+            {index:true, element: <DefaultDisplay/>},
+            {path:":id", element: <MessageId/>}
+        ]
     },
-    {
-        path: "/messages/:id",
-        element:<MessageId/>
-    }
 
 ]
 

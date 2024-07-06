@@ -25,11 +25,6 @@ function MessageId(){
 
     if(loading){return <p>Loading...</p>}
 
-    const usersMapped = messageData?.users?.map(user => {
-        return <div key={user._id}>
-            <h5>{user.username}</h5>
-            </div>
-    })
 
     function handleDeleteSubmit(e){ //not making api call?
         e.preventDefault()
@@ -53,15 +48,10 @@ function MessageId(){
     )
 
     return(
-        <div className={style.content}>
-        <Navbar/>
-        {/*userMessages?.length > 0 ? <UserMessages allMessages={userMessages} handleClick={handlePostClick} currentUser={currentUser}/> : <h3>No Messages</h3>*/}
         <div>
-            {usersMapped}
             <MessageBody body={messageData.body} id={messageData._id}/> 
             <button onClick={() => setDeleteMessage(true)}>Delete</button>
             {deleteMessage && deleteMessagePopup}
-        </div>
         </div>
     )
 }
