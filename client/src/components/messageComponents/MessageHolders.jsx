@@ -86,6 +86,15 @@ function MessageHolders(){
         )
     })
 
+    const findNewUsers = (
+        <div className="dialogBackdrop" >
+            <div className="editBoard">
+                {usersMapped}
+                <button onClick={() => setFindUsers(false)}>Close</button>
+            </div> 
+        </div>
+    )
+
 
     if(loading){return <h1>Loading...</h1>}
 
@@ -94,7 +103,7 @@ function MessageHolders(){
         <Navbar />
         {userMessages?.length > 0 ? <UserMessages allMessages={userMessages} handleClick={handlePostClick} currentUser={currentUser}/> : <h3>No Messages</h3>}
         <Outlet context={[findUsers, setFindUsers]}/>
-        {/*if message not opened? <Outlet/> else: noneOpened*/}
+        {findUsers && findNewUsers}
         </div>
     )
 }
