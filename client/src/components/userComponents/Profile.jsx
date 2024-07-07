@@ -162,7 +162,10 @@ function Profile(){
         !currentUser.following.includes(user._id)).slice(0,3).map(user=>{
         return(
             <div key={user._id} className={style.userMapped}>
+            <div className={style.userMappedInfo}>
+                <div className={style.userMappedPFP}></div>
                 <h5 onClick={() => navigate(`/profile/${user._id}`)}>{user.username}</h5>
+            </div>
                 <button onClick={() => followUser(user._id)}>Follow</button>
             </div>
         )
@@ -183,7 +186,7 @@ function Profile(){
         </div>
         <div className={style.detailsHolder}>
         <p>{currentUser?.details?.location ? currentUser.details.location : "Unknown" }</p>
-        <p>{currentUser?.details?.bio}</p>
+        <p>{currentUser?.details?.bio ? currentUser.details.bio : "No Bio"}</p>
         </div>
         </div>
         </header>
@@ -194,13 +197,13 @@ function Profile(){
         <h3>Recommended</h3>
         {recommendedMapped}
         </div>
-        {currentUser?._id === profileUser?._id &&<button 
+        {currentUser?._id === profileUser?._id &&<button className={style.editButton}
             onClick={() => setStatus(prevStat=>({...prevStat,showEdit:true}))}>Edit Profile
         </button>}
         {status.showEdit && editInformation}
         {followStatus.showFollowing && ShowsFollowing()}
         {followStatus.showFollowers && ShowsFollowers()}
-        <button onClick={handleLogout}>Logout</button>
+        <button onClick={handleLogout} className={style.logoutButton}>Logout</button>
         </div>
         </div>
         </div>

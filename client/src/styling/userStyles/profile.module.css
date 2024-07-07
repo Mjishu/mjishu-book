@@ -18,7 +18,7 @@
     margin:0;
     width:125px;
     height:125px;
-    border-radius:50px;
+    border-radius:50%;
     background-color:hsl(var(--light))
 }
 button{
@@ -46,10 +46,64 @@ button{
     overflow-y:auto;
 }
 
+/*Rec Holder*/
 .recommendedHolder{
     position:absolute;
     right:1.75rem;
     top:15.5rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+.recommendedHolder h3{font-size:2.5rem;}
+
+.userMapped{
+    width:18.125rem;height:4.5rem;
+    border:1px solid hsl(var(--black-10));
+    border-radius:5px;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    padding: 0 1rem;
+}
+.userMappedInfo{display:flex; align-items:center;gap:1rem;}
+.userMappedPFP{
+    border:none;
+    border-radius:50%;
+    width:45px;height:45px;
+    background:hsl(var(--black-30));
+}
+/**/
+
+.detailsHolder{
+    color:hsl(var(--black-75))
+}
+
+.editButton{
+    position:absolute;
+    right:6.875rem;
+    top:8rem;
+    border:1px solid hsl(var(--black-10));
+    width:11rem;
+    height:3rem;
+    border-radius:10px;
+    font-weight:700;
+    font-weight:600;
+}
+
+.logoutButton{ /*make it more noticeable?*/
+    border:none;
+    color:hsl(var(--black-75));
+    position:absolute;
+    bottom:.5rem;
+    right:1.5rem;
+}
+.logoutButton:hover{
+    color:hsl(var(--primary))
+}
+.logoutButton:active{
+    color:hsl(var(--light))
 }
 
 /*Popup boxes*/
