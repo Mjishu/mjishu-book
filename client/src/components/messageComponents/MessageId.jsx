@@ -21,7 +21,7 @@ function MessageId(){
             setLoading(false)
         })
         .catch(error => console.error(`there was an error fetching message: ${error}`))
-    },[])
+    },[window.location.href])
 
     if(loading){return <p>Loading...</p>}
 

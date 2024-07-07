@@ -9,8 +9,11 @@ const UserSchema = new Schema({
     email: {type:String, required: true},
     followers: [{type:Schema.Types.ObjectId, ref:"User"}],
     following: [{type:Schema.Types.ObjectId, ref:"User"}],
-    pfp: String,
-    bio: String
+    details:{
+        pfp: String,
+        bio: String,
+        location: String,
+    }
 })
 
 UserSchema.pre("save", async function(next){

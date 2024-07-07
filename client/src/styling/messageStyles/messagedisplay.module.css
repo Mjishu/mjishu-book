@@ -68,3 +68,84 @@
     color: hsl(var(--black-50));
     width:4rem;
 }
+
+
+.messageInput{
+    display:flex;
+    gap:1.85rem;
+}
+
+.messageInput input{
+    width:46.875rem;
+    background: #fff;
+    border: none;
+    border-radius:15px;
+    height:2.5rem;
+}
+
+.messageInput button{
+    background: #fff;
+    border:none;
+    border-radius:15px;
+    width: 3.5rem;
+    height:2.5rem;
+    align-items:center;
+}
+.messageInput button:hover{
+    border:2px solid hsl(var(--black-10))
+}
+
+
+.messageInput button img{
+    width:1.9rem;
+}
+/*Message body*/
+
+.messageBody{
+    display:flex;
+    flex-direction: column;
+    height:90vh;
+    width:100%;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.messageParts{
+    width:50rem;
+    overflow-y: auto;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+    border-radius: 10px;
+    box-shadow: 0 48px 83px hsla(var(--black),0),
+    0 36px 54px hsla(var(--black),0.01),
+    0 25px 44px hsla(var(--black),0.02),
+    0 14px 35px hsla(var(--black), 0.05),
+    0 5px 22px hsla(var(--black),0.09);
+    gap: 2rem;
+    padding: 2.5rem;
+}
+
+.messagesMapped{
+    height: fit-content;
+    width:30rem;
+    display:flex;
+    flex-direction:column;
+}
+
+.messagesMapped *{
+    padding: 0;
+    margin:0;
+    height:fit-content; /*key line here is what makes the issue with message size*/
+}
+
+.messageAuthor{
+}
+
+.messageBody{
+
+}
+
+.messageTime{
+
+}

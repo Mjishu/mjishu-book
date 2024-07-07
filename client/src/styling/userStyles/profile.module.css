@@ -1,0 +1,67 @@
+.bodyHolder{
+    display:flex;
+    justify-content:center;
+    margin-top:5.75rem;
+}
+
+.bodyInfo{
+    display:flex;
+    flex-direction:column;
+}
+.header{ /*Main user information*/
+    display:grid;
+    grid-template-columns:9.35rem 1fr;
+    align-content:center;
+}
+.profilePicture{
+    padding:0;
+    margin:0;
+    width:125px;
+    height:125px;
+    border-radius:50px;
+    background-color:hsl(var(--light))
+}
+button{
+    width:fit-content;
+}
+
+.userText{
+    display:flex;
+    flex-direction:column;
+    margin:0;
+    padding:0;
+    gap:1rem;
+}
+.userText * {
+    padding:0;margin:0;
+}
+
+.followHolder{
+    display:flex;
+    gap:2rem;
+}
+
+.postHolder{
+    margin-top:4rem;
+    overflow-y:auto;
+}
+
+.recommendedHolder{
+    position:absolute;
+    right:1.75rem;
+    top:15.5rem;
+}
+
+/*Popup boxes*/
+.editBack{
+    display:flex;
+    justify-content:center;
+}
+.editInfo input{
+    width: fit-content;
+}
+
+.editInfo{
+    display:flex;
+    flex-direction:column;
+}

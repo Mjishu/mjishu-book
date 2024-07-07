@@ -101,7 +101,7 @@ exports.user_sign_out = async(req,res,next)=>{
     res.status(500).json({message:`error logging out: ${error}`})}
 };
 
-exports.user_following = async(req,res)=>{
+exports.user_following = async(req,res)=>{ //issue where it adds to both follower and following if you follow a person
     const followerId = req.body.id;
     const followedId = req.params.id;
     console.log(followerId, followedId)

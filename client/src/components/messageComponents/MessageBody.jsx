@@ -9,28 +9,37 @@ function MessageBody(props){
         message: "",
         author: currentUser._id
     })
+    const chatContainerRef= React.useRef(null);
+
+    React.useEffect(()=>{
+        const chatContainer = chatContainerRef.current;
+        if(chatContainer){
+            chatContainer.scrollTop = chatContainer.scrollHeight
+        }
+    },[messageBody])
 
     const messagesMapped = props.body.map(message => {
-        const todaysDate = new Date();
-        const todaysDateSplit = todaysDate.toISOString().split("T")[0];
-        const storedDateSplit = message.timestamp.split("T")[0];
+        const messageDate = message.timestamp
+        const todaysDate = new Date().toISOString();
+        const todaysDateSplit = todaysDate.split("T")[0];
+        const storedDateSplit = messageDate.split("T")[0];
         let isCurrentUser;
         let formatedTime;
 
         //Check hour
-        /*if(todaysDateSplit === storedDateSplit){
-            formatedTime = `${format(props.time, "h aaa")} sent`
+        if(todaysDateSplit === storedDateSplit){
+            formatedTime = `${format(message.timestamp, "h aaa")} sent`
         }else{
-           formatedTime = format(props.time, "do MMMM")
-        }*/
-        //if (message.author.username === loggedInUser.username){
-         //   isCurrentUser = true;}
+            formatedTime = format(message.timestamp, "do MMMM")
+        }
+            if (message.author.username === currentUser.username){
+                isCurrentUser = true;}
 
         return (<div key={message._id} className={style.messagesMapped}>
-            <h6>{message.author.username}</h6>
-            <p>{message.message}</p>
-            <p>{formatedTime}</p>
-        </div>)
+            <h6 className={style.messageAuthor}>{message.author.username}</h6>
+            <p className={style.messageBody}>{message.message}</p>
+            <p className={style.messageTime}>{formatedTime}</p>
+            </div>)
     })
 
     function handleChange(e){
@@ -47,20 +56,24 @@ function MessageBody(props){
             body:JSON.stringify(messageBody)
         }
         fetch(`/api/message/find/${props.id}/update`,fetchParams) //isnt making api call
-        .then(res=>res.json())
-        .then(data => console.log(data))
-        .catch(err => console.error(`error sending message: ${err}`))
+            .then(res=>res.json())
+            .then(data => console.log(data))
+            .catch(err => console.error(`error sending message: ${err}`))
 
         setMessageBody(prev=>({...prev,message:""}))
     }
 
     return (
-        <div>
+        <div className={style.messageBody}>
+        <div className={style.messageParts} ref={chatContainerRef}>
         {messagesMapped}
-        <form onSubmit={handleSubmit} autoComplete="off">
-            <label htmlFor="message">Message</label>
-            <input type="text" name="message" onChange={handleChange} value={messageBody.message}/>
-            <button className={`beautiful-shadow-1`}>Send</button>
+        </div>
+        <form onSubmit={handleSubmit} autoComplete="off" className={style.messageInput}>
+        <input type="text" name="message" onChange={handleChange} value={messageBody.message} 
+        className="beautiful-shadow-1"/>
+        <button className={`beautiful-shadow-1`}>
+        <img src="/icons/paper-plane.svg" alt="Send"/>
+        </button>
         </form> 
         </div>
     )
