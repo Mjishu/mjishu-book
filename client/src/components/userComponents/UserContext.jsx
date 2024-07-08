@@ -2,9 +2,10 @@ import React from 'react';
 
 const UserContext = React.createContext();
 
-export function UserProvider({children}){
+export function UserProvider({children}){ //replace useRef with callback
     const[currentUser,setCurrentUser] = React.useState(null);
     const [isLoading,setIsLoading] = React.useState(true);
+    const currentUserRef= React.useRef(null)
 
     React.useEffect(()=>{
         fetch("/api/user/current")
@@ -19,8 +20,19 @@ export function UserProvider({children}){
             })
     },[])
 
+    const memoizedCurrentUser = React.useMemo(() => currentUser,[currentUser]);
+
+    const contextValue = React.useMemo(() => ({
+        currentUser:memoizedCurrentUser,
+            currentUserRef,
+            setCurrentUser:(user)=>{
+                setCurrentUser(user)
+                currentUserRef.current =user;
+            },isLoading
+    }),[memoizedCurrentUser,isLoading])
+
     return (
-        <UserContext.Provider value={{currentUser,setCurrentUser, isLoading}}>
+        <UserContext.Provider value={contextValue}>
         {children}
         </UserContext.Provider>
     )

@@ -7,6 +7,7 @@
     width:5.5rem;
     border-right: 2px solid hsl(var(--black-50));
     align-items:center;
+    position:sticky;
 }
 
 .navElement{

@@ -4,12 +4,14 @@ import {useNavigate} from "react-router-dom";
 import style from "../../styling/postStyles/postDetail.module.css"
 import {useUser} from "../userComponents/UserContext.jsx"
 import DisplayComments from "../commentComponents/DisplayComments"; 
- 
+import {format} from "date-fns"
+
 function PostDetail(){
-    const {currentUser} = useUser();
+    const {currentUser, currentUserRef,isLoading} = useUser();
     const [postData, setPostData] = React.useState();
+    const [postLikes,setPostLikes] = React.useState();
+    const [liked,setLiked] = React.useState();//undefined
     const [loading, setLoading] = React.useState(true);
-    const[liked,setLiked] = React.useState(false); // set this value based on if currentUser._id in postData.likes
     const navigate = useNavigate();
     const[status,setStatus] = React.useState({
         showDelete : false,
@@ -23,17 +25,17 @@ function PostDetail(){
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
 
     React.useEffect(()=>{
-        fetch(`/api/post/find/${id}`)
-        .then(res => res.json())
-        .then(data => {
-            setPostData(data)
-            setEditData(prevData=>({...prevData,message:data.message,image:data?.image}))
-        })
-        .catch(err => console.error(`error fetching post ${err}`))
-        .finally(() => setLoading(false))
-    },[])
-
-    if(loading){return <p>Loading... </p>}
+        !isLoading && fetch(`/api/post/find/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                setPostData(data);
+                setEditData(prevData=>({...prevData,message:data.message,image:data?.image}));
+                setLiked(data.likes.some(like => like._id === currentUser._id));
+                setPostLikes(data.likes?.length);
+            })
+            .catch(err => console.error(`error fetching post ${err}`))
+            .finally(() => setLoading(false))
+    },[id,currentUser,liked])
 
     function handleChange(e){
         const {name,value} = e.target;
@@ -45,9 +47,9 @@ function PostDetail(){
         const fetchParams = {method:'PUT', headers:{"Content-Type":"application/json"}, body:JSON.stringify(editData)}
 
         fetch(`/api/post/find/${id}/update`, fetchParams)
-        .then(res => res.json())
-        .then(data => data.message === "success" && location.reload())
-        .catch(error => console.error(`error updating post ${error}`))
+            .then(res => res.json())
+            .then(data => data.message === "success" && location.reload())
+            .catch(error => console.error(`error updating post ${error}`))
     }
 
     function handleLike(){
@@ -56,9 +58,10 @@ function PostDetail(){
         fetch(`/api/post/find/${postData._id}/like`,{method:'POST',
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({id:id})})
-        .then(res => res.json())
-        .then(data => data.message === "success" ? setLiked(true) : console.log(data))
-        .catch(error => console.error(`error liking message: ${error}`))
+            .then(res => res.json())
+            .then(data => data.message === "success" ? setLiked(true) : console.log(data))
+            .catch(error => console.error(`error liking message: ${error}`))
+        setLiked(true)
     }
 
     function handleUnlike(){
@@ -67,48 +70,70 @@ function PostDetail(){
             headers:{"Content-Type":"application/json"},
             body: JSON.stringify({id:id})
         })
-        .then(res => res.json())
-        .then(data => data.message === "success" ? setLiked(false) :console.log(data))
-        .catch(error => console.error(`there was an error unliking the post: ${error}`))
+            .then(res => res.json())
+            .then(data => data.message === "success" ? setLiked(false) :console.log(data))
+            .catch(error => console.error(`there was an error unliking the post: ${error}`))
+        setLiked(false)
     }
 
     const editItems = (
-        <form onSubmit={handleSubmit} className={style.form}>
-            <label htmlFor="message">Message</label>
-            <textarea className={style.textarea} name="message" value={editData.message} onChange={handleChange}/>
-            <div className={style.buttonHolder}>
-            <button className={style.button} onClick={() => setStatus(prevStatus => ({...prevStatus,showEdit:false}))}>Cancel</button>
-            <button className={style.button}>Submit</button>
-            </div>
+        <div className="dialogBackdrop">
+        <form onSubmit={handleSubmit} className={`${style.form} editBoard`}>
+        <label htmlFor="message">Message</label>
+        <textarea className={`${style.textarea} beautiful-shadow-1`} name="message" value={editData.message} onChange={handleChange}/>
+        <div className={style.popupButtonHolder}>
+        <button className={`${style.popupButtons} beautiful-shadow-1`} onClick={() => setStatus(prevStatus => ({...prevStatus,showEdit:false}))}>Cancel</button>
+        <button className={`${style.popupButtons} beautiful-shadow-1`}>Submit</button>
+        </div>
         </form>
+        </div>
     )
 
+    const deleteItems= (
+        <div className="dialogBackdrop">
+            <div className="editBoard">
+            <p>Are you sure you want to delete? </p>
+            <div className={style.popupButtonHolder}>
+            <button className={`${style.popupButtons} beautiful-shadow-1`} onClick={() => setStatus(prevStatus => ({...prevStatus,showDelete:false}))}>Cancel</button>
+            <button className={`${style.popupButtons} beautiful-shadow-1`} onClick={() => fetch(`/api/post/find/${id}/delete`,{method:"DELETE"})
+                .then(res=>res.json()).then(data=> data.message="success" && navigate("/"))}>Delete 
+            </button>
+        </div>
+            </div>
+        </div>
+    )
+
+    if(loading || isLoading){return <p>Loading... </p>}
     return (
         <div className="content">
         <Navbar/>
-        <div>
-        <div>
-            <p>{postData?.message}</p>
-            <h3>{postData?.author?.username}</h3>
-            <p>{postData?.createdAt}</p>
-        </div>
-        <button onClick={() => setStatus(prev =>({...prev, showEdit:true}))}>Edit</button>
-        <button onClick={() => setStatus(prev => ({...prev, showDelete:true}))}>Delete</button>
+        <div className={style.bodyInfo}>
+        <div className={style.insideBodyInfo}>
+        <div className={style.postData}>
+        <h3 className={style.postAuthor}>{postData.author.username}</h3>
+        <div className={`${style.postImage} beautiful-shadow-1`}>{postData.image && <img  src={postData.image} alt="Post Image"/>}</div>
+        <div className={style.subDetails}>
+        <p className={style.timestamp}>{format(postData.createdAt, "do MMMM")}</p>
         <div className={style.likeHolder}>
-            <p>{postData.likes.length} Likes</p>
-            <button onClick={handleLike}>Like</button>
-            <button onClick={handleUnlike}>Unlike</button>
+        <p>{postLikes}</p>
+        <button onClick={liked ? handleUnlike :handleLike} className={style.likesimagebutton}>
+        <img className={`${style.likesImage} ${liked ? "pulse" :""}`} src={liked ? "/icons/full-heart.png" :"/icons/heart.svg"} alt="likes"/>
+        </button>
         </div>
-        {status.showDelete && (
-            <div>
-            <p>Are you sure you want to delete? </p>
-            <button onClick={() => setStatus(prevStatus => ({...prevStatus,showDelete:false}))}>Cancel</button>
-            <button onClick={() => fetch(`/api/post/find/${id}/delete`,{method:"DELETE"})
-                .then(res=>res.json()).then(data=> data.message="success" && navigate("/"))}>Delete 
-            </button>
-            </div>)}
+        </div>
+        <p className={style.postMessage}>{postData.message}</p>
+        </div>
+        <div className={style.postButtons}>
+        {currentUser._id === postData?.author._id && <button className={style.postEdit} onClick={() => setStatus(prev =>({...prev, showEdit:true}))}>Edit</button>}
+        {currentUser._id === postData?.author._id && 
+                <button className={style.postDelete} onClick={() => setStatus(prev => ({...prev, showDelete:true}))}>
+                <img alt="delete" src="/icons/trash.svg"/></button>}
+        </div>
+        <hr className={style.seperator}/>
+        {status.showDelete && deleteItems}
         {status.showEdit && editItems}
         <DisplayComments postid={postData._id} currentUser={currentUser}/>
+        </div>
         </div>
         </div>
     )

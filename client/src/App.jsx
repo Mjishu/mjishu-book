@@ -8,7 +8,7 @@ import {format} from "date-fns";
 
 
 function App() {
-    const {currentUser, setCurrentUser,isLoading} = useUser();
+    const {currentUser, currentUserRef,isLoading} = useUser();
     const [postsLoading, setPostsLoading] = React.useState(true);
     const [allUsers,setAllUsers] = React.useState();
     const [allPosts,setAllPosts]= React.useState();

@@ -1,4 +1,5 @@
 import React from "react";
+import style from "../../styling/postStyles/postDetail.module.css";
 
 //props needs postid
 export default function CreateComment(props){
@@ -21,9 +22,6 @@ export default function CreateComment(props){
 
         setCommentDetails(prev=>({...prev,message:""}))
     }
-    function clearInput(){
-        setCommentDetails({message:"",})
-    }
 
     function handleChange(e){
         const {name,value} = e.target;
@@ -31,11 +29,9 @@ export default function CreateComment(props){
     }
 
     return(
-        <form onSubmit={handleSubmit} autoComplete="off">
-            <label htmlFor="message">Comment</label>
-            <input type="text" onChange={handleChange} value={commentDetails.message} name="message"/>
-            <button onClick={clearInput}>Clear</button>
-            <button>Submit</button>
+        <form onSubmit={handleSubmit} autoComplete="off" className={style.commentForm}>
+            <input type="text" placeholder="Comment" className={`${style.commentInput} beautiful-shadow-1`} onChange={handleChange} value={commentDetails.message} name="message"/>
+            <button className={`${style.sendButton} beautiful-shadow-1`}><img alt="submit" src="/icons/paper-plane.svg"/></button>
         </form>
     )
 }
