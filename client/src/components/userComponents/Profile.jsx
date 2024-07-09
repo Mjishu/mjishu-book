@@ -14,7 +14,8 @@ function Profile(){
     const [status,setStatus] = React.useState({showEdit:false,})
     const [editData,setEditData] = React.useState({
         username:"",
-        email:""
+        email:"",
+        image:""
     });
     const [followStatus,setFollowStatus] = React.useState({
         showFollowers: false,
@@ -22,6 +23,8 @@ function Profile(){
     })
     const [recommendedUsers, setRecommendedUsers] = React.useState({})
     const navigate = useNavigate();
+    const [cloud,setCloud] = React.useState()
+    const usePfpRef= React.useRef(null);
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
 
@@ -43,6 +46,8 @@ function Profile(){
         .then(res => res.json())
         .then(data => setRecommendedUsers(data))
         .catch(error => console.error(`error fetching recommended user:${error}`))
+
+        fetch("/api/uploadform").then(res=>res.json()).then(data=>setCloud(data)).catch(err=>console.error(err))
     },[id]);
 
     React.useEffect(()=>{
@@ -53,6 +58,10 @@ function Profile(){
         navigate(`/post/${id}`)
     }
 
+    function handleRefClick(){
+        usePfpRef.current.click();
+    }
+
     const postsMapped = userPosts?.map(post =>{
         const formatedDate = format(post.createdAt ,"do MMMM")
 
@@ -61,11 +70,30 @@ function Profile(){
             time={formatedDate} id={post._id} handleClick={handlePostClick}
             likes={post.likes}/>
     })
+    async function uploadImage(file){ 
+        const data = new FormData();
+        data.append("file",file);
+        data.append("upload_preset", "jfhbuazc");
+        data.append("folder","profile_pictures")
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud.cloud_name}/image/upload`,
+            {method:"POST", body:data}
+        );
+        const img = await res.json();
+        return {
+            secure_url: img.secure_url,
+            public_id: img.public_id
+        };
+    }
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault()
-        console.log(editData)
-        const fetchParams = {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(editData)}
+        const imageUpload = await uploadImage(editData.image)
+        const fetchParams = {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+            username:editData.username, email:editData.email,
+            image:{
+                url:imageUpload.secure_url, id:imageUpload.public_id
+            }
+        })}
 
         fetch(`/api/user/find/${id}/update`,fetchParams) //this call isnt being properly made? but submit calls func
             .then(res=>res.json())
@@ -75,8 +103,8 @@ function Profile(){
     }
 
     function handleChange(e){
-        const {name,value} = e.target;
-        setEditData(prev => ({...prev, [name]:value}))
+        const {name,value,type,files} = e.target;
+        setEditData(prev => ({...prev, [name]: type==="file" ? files[0] : value}))
     }
 
     const editInformation = (
@@ -87,6 +115,10 @@ function Profile(){
         <input type="text" name="username" value={editData?.username} onChange={handleChange}/>
         <label htmlFor="email">Email</label>
         <input type="email" name="email" value={editData?.email} onChange={handleChange}/>
+        <div className={style.imageInputHolder} onClick={handleRefClick}>
+        <label htmlFor="image" className={style.imageLabel}><img src="/icons/upload.svg"/>Choose a file</label>
+        <input ref={usePfpRef} type="file" name="image" multiple={false} onChange={handleChange} className={style.imageInput}/>
+        </div>
         <div>
         <button onClick={()=>setStatus(prev=>({...prev,showEdit:false}))}>Cancel</button>
         <button>Submit</button>
@@ -156,10 +188,10 @@ function Profile(){
             .catch(err => console.error(`error logging out ${err}`))
     }
 
-    if(loading && isLoading){return <h1>Loading...</h1>}
+    if(loading || isLoading){return <h1>Loading...</h1>}
 
     const recommendedMapped = recommendedUsers?.length > 0 && recommendedUsers.filter(user => 
-        !currentUser.following.includes(user._id)).slice(0,3).map(user=>{
+        !currentUser?.following.includes(user._id)).slice(0,3).map(user=>{
         return(
             <div key={user._id} className={style.userMapped}>
             <div className={style.userMappedInfo}>
@@ -177,16 +209,18 @@ function Profile(){
         <div className={style.bodyHolder}>
         <div className={style.bodyInfo}>
         <header className={style.header}>
-        <div className={style.profilePicture}></div>
+        <div className={`${profileUser.details.pfp.url ? "" :style.profilePicture} ${style.profile_pic_holder}`}>
+        {profileUser?.details?.pfp?.url && 
+            <img className={style.profile_pic_holder} src={profileUser.details.pfp.url} alt="PFP"/>}</div>
         <div className={style.userText}>
         <h1 className={style.username}>{profileUser?.username}</h1>
         <div className={style.followHolder}>
-        <h5 onClick={() => setFollowStatus(prev =>({...prev, showFollowers:true}))}>{currentUser.followers?.length}Followers</h5>
-        <h5 onClick={() => setFollowStatus(prev => ({...prev,showFollowing:true}))}>{currentUser.following?.length}Following</h5>
+        <h5 onClick={() => setFollowStatus(prev =>({...prev, showFollowers:true}))}>{profileUser?.followers?.length ?? 0}Followers</h5>
+        <h5 onClick={() => setFollowStatus(prev => ({...prev,showFollowing:true}))}>{profileUser?.following?.length ?? 0}Following</h5>
         </div>
         <div className={style.detailsHolder}>
-        <p>{currentUser?.details?.location ? currentUser.details.location : "Unknown" }</p>
-        <p>{currentUser?.details?.bio ? currentUser.details.bio : "No Bio"}</p>
+        <p>{profileUser?.details?.location ? profileUser.details.location : "Unknown" }</p>
+        <p>{profileUser?.details?.bio ? profileUser.details.bio : "No Bio"}</p>
         </div>
         </div>
         </header>

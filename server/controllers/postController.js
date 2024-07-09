@@ -1,19 +1,34 @@
 const Post = require("../models/post");
+const cloudinary = require("cloudinary").v2
+const Comment = require("../models/comment")
 
 exports.post_create = async(req,res)=>{
     const newPost = new Post({
         author:req.user._id,
         message: req.body.message,
-        image: req.body.image
+        image:{
+            url: req.body.image.url,
+            id:req.body.image.id
+        }
     })
     await newPost.save();
     res.json({message:"success"})
 };
 
 exports.post_update = async(req,res)=>{
+    //should find current post, update teh image url, and then delete the image from cloudinary
+    const post = await Post.findById(req.params.id).exec();
+    if(post.image.id){
+        cloudinary.uploader.destroy(post.image.id, (error,result) => {
+            console.log(result,error)
+        })
+    }
     const postDetails = {
         message:req.body.message, 
-        image:req.body.image,
+        image:{
+            url: req.body.image.url,
+            id:req.body.image.id
+        },
     }
     const updatedPost = await Post.findByIdAndUpdate(req.params.id,postDetails);
     res.json({message:"success"})
@@ -32,7 +47,17 @@ exports.find_all = async(req,res) => {
 
 exports.post_delete = async(req,res)=>{
     const id = req.params.id;
-    await Post.findByIdAndDelete(id)
+    const postFound = await Post.findById(id).exec();
+    const commentsWithId = await Comment.deleteMany({post:id});
+    
+    if(postFound.image.id){
+        cloudinary.uploader.destroy(postFound.image.id, (error,result) => {
+            console.log(result,error)
+        })
+    }
+
+   await Post.findByIdAndDelete(id)
+
     res.json({message:"success"})
 };
 

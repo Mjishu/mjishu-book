@@ -4,12 +4,19 @@ require("dotenv").config();
 const {body,validationResult} = require("express-validator");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
+const cloudinary = require("cloudinary").v2
+
 exports.user_create = async(req,res)=> {
     try{
         const newUser = new User({
             username:req.body.username,
             email:req.body.email,
-            password: req.body.password
+            password: req.body.password,
+            details:{
+                pfp:{
+                    url: "",
+                }
+            }
         })
         await newUser.save();
         res.json({message:"success"})
@@ -36,10 +43,22 @@ exports.find_one = async(req,res)=>{
 exports.user_update = async(req,res)=>{
     id = req.params.id;
     if(id != req.user._id){return res.status(500).json({message:"Wrong user"})}
+    const user = await User.findById(id).exec();
+    if(user.details.pfp.id){
+        cloudinary.uploader.destroy(user.details.pfp.id, (error,result) => {
+            console.log(result,error)
+        })
+    }
 
     const userData ={
         username: req.body.username,
-        email:req.body.email
+        email:req.body.email,
+        details:{
+            pfp:{
+                url:req.body.image.url,
+                id:req.body.image.id
+            },
+        },
     }
     await User.findByIdAndUpdate(req.params.id,userData)
     res.json({message:"success"})

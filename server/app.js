@@ -14,6 +14,7 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/user");
 const bcrypt = require("bcrypt")
 const cloudinary = require("cloudinary").v2
+const Multer = require("multer")
 
 
 const app = express();
@@ -27,6 +28,14 @@ main().catch((err)=>console.log(err));
 async function main(){
     await mongoose.connect(mongoDB);
 }
+
+//cloudinary connection
+cloudinary.config({
+    cloud_name: process.env.cloud_name,
+    api_key: process.env.api_key_cloud,
+    api_secret: process.env.api_secret_cloud,
+    secure:true //this might make it not work bc rn its http
+})
 
 app.use(session({
         secret: process.env.SECRET_KEY, 
@@ -96,6 +105,11 @@ app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/post", postRouter);
+
+//api router
+app.get("/api/uploadform", async(req,res)=>{
+    res.json(cloudinary.config())
+})
 
 //Error Handling
 app.use(function(req, res, next) {

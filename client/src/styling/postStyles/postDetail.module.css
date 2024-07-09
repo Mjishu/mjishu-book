@@ -169,3 +169,27 @@
     flex-direction:row;
     justify-content:space-between;
 }
+
+/*popup*/
+.imageInput{
+    display:none;
+}
+.imageInputHolder{
+    margin-top:2.5rem;
+    border:none;
+    border-radius:5px;
+    background:hsl(var(--primary));
+    color:hsl(var(--off-white));
+    width:12.125rem;height:2.5rem;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    left:6.5rem;
+    bottom:1.5rem;
+}
+
+.imageLabel img{
+    width:1.5rem;
+}

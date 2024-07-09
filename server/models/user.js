@@ -10,7 +10,10 @@ const UserSchema = new Schema({
     followers: [{type:Schema.Types.ObjectId, ref:"User"}],
     following: [{type:Schema.Types.ObjectId, ref:"User"}],
     details:{
-        pfp: String,
+        pfp: {
+            url:String,
+            id:String
+        },
         bio: String,
         location: String,
     }
