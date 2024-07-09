@@ -41,6 +41,25 @@ function LogIn(){
             .catch(error => console.error(`error making sigin in call ${error}`))
     }
 
+    function handleDummyAccount(){
+        const fetchParams = {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                username:"Demo",
+                password:"Demo"
+            })
+        }
+        fetch("/api/user/sign-in", fetchParams)
+        .then(res => res.json())
+        .then(data => {
+            if(data.message === "success"){
+                setCurrentUser(data.user)
+                navigate("/")}
+        })
+        .catch(error => console.error(`error trying to use demo account! ${error}`))
+    }
+
     return(
         <div className={style.content}>
         <div className={style.loginImage}></div>
@@ -74,6 +93,7 @@ function LogIn(){
         </div>
         <div className={style.signInHolder}>
         <button className={`${style.signInButton} beautiful-shadow-1`}>Log In</button>
+        <button onClick={handleDummyAccount} className={`${style.signInButton} beautiful-shadow-1`}>Log in as demo user</button>
         <button className={`${style.alternateSignIn} beautiful-shadow-1`}>Sign in with SITE</button>
         </div>
         </form>
