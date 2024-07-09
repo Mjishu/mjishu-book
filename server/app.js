@@ -13,6 +13,7 @@ const MongoStore = require("connect-mongo");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
 const bcrypt = require("bcrypt")
+const cloudinary = require("cloudinary").v2
 
 
 const app = express();
