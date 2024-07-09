@@ -102,7 +102,10 @@ function App() {
     const allUsersMapped = allUsers?.filter(user => !currentUser.following.includes(user._id)).map(user=>{
         return(
             <div key={user._id} className={style.userMapped}>
+            <div className={style.usernameHolder}>
+                <div className={style.userPFP}></div>
                 <h5 onClick={() => handleUserClick(user._id)}>{user.username}</h5>
+            </div>
                 <button onClick={() => follow(user._id)}>Follow</button>
             </div>
         )
@@ -119,8 +122,8 @@ function App() {
         <div className={style.homeBody}>
         <div className={style.posts}>
         <div className={style.postOptionHolder}>
-            <button className={style.postOptionSelect} onClick={() => setShowFollowing(false)}>Explore</button>
-            <button className={style.postOptionSelect} onClick={() => setShowFollowing(true)}>Following</button>
+            <button className={`${style.postOptionSelect}`} onClick={() => setShowFollowing(false)}>Explore</button>
+            <button className={`${style.postOptionSelect}`} onClick={() => setShowFollowing(true)}>Following</button>
         </div>
         <div className={style.postOption}>
         {showFollowing ? followPostsMapped :allPostsMapped}
