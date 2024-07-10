@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const sha256 = require("js-sha256");
 
 const Schema = mongoose.Schema;
 
@@ -30,8 +31,13 @@ UserSchema.pre("save", async function(next){
         return next()
     }
 
+    const address = String(user.email).trim().toLowerCase();
+    const emailHash = sha256(address)
+
     const hash = await bcrypt.hash(this.password,10);
     this.password = hash;
+
+    this.details.pfp.url = `https://www.gravatar.com/avatar/${emailHash}`; //this doesnt show email profile? just random logo
     next()
 })
 

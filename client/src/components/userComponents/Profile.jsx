@@ -271,7 +271,9 @@ function Profile(){
         </div>
         <div className={style.recommendedHolder}>
         <h3>Recommended</h3>
+        <div className={style.recommendedMapHolder}>
         {recommendedMapped}
+        </div>
         </div>
         {currentUser?._id === profileUser?._id &&<button className={style.editButton}
             onClick={() => setStatus(prevStat=>({...prevStat,showEdit:true}))}>Edit Profile

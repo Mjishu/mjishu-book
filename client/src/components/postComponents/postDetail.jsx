@@ -27,7 +27,17 @@ function PostDetail(){
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
 
     React.useEffect(()=>{
-        !isLoading && fetch(`/api/post/find/${id}`)
+        if(!isLoading){
+            if(!currentUser || currentUser.message === "none"){
+                navigate("/login")
+            }else{
+                callApis();
+            }
+        }
+    },[currentUser,isLoading,navigate,id,liked])
+
+    function callApis(){
+        fetch(`/api/post/find/${id}`)
             .then(res => res.json())
             .then(data => {
                 setPostData(data);
@@ -41,7 +51,7 @@ function PostDetail(){
         fetch("/api/uploadform")
         .then(res => res.json()).then(data=>setCloud(data))
         .catch(error => console.error(`error: ${error}`))
-    },[id,currentUser,liked])
+    }
 
     function handleChange(e){
         const {name,value, files,type} = e.target;

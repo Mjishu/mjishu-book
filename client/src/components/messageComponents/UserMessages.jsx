@@ -11,7 +11,6 @@ export default function UserMessages(props){
     const allMessagesMapped = props.allMessages && props.allMessages.map(message => {
         const username = message.users.filter(userId => userId._id !== currentUser._id)
         const formatDate = format(message.updatedAt, "do MMMM")
-        console.log(username)
 
         return (
             <MessagePreview timestamp={formatDate} 

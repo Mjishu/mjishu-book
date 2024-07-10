@@ -12,13 +12,23 @@ function CreatePost(){
     const [cloud,setCloud] = React.useState()
     const navigate = useNavigate()
     const fileInputRef = React.useRef(null)
-    const {currentUser} = useUser();
+    const {currentUser, isLoading} = useUser();
 
     React.useEffect(()=>{
+        if(!isLoading){
+            if(!currentUser || currentUser.message === "none"){
+                navigate("/login")
+            }else{
+                callApis();
+            }
+        }
+    },[currentUser,isLoading,navigate])
+
+    function callApis(){
         fetch("/api/uploadForm")
         .then(res=>res.json())
         .then(data => setCloud(data)).catch(err =>console.error(err))
-    },[])
+    }
 
     function handleChange(e){
         const {name,value,files,type} = e.target;

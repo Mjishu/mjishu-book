@@ -21,7 +21,7 @@ exports.user_create = async(req,res)=> {
                 }
             }
         })
-        await newUser.save();
+        await newUser.save()
         res.json({message:"success"})
     }catch(error){
         res.status(500).json({message: `error creating new user ${error}`})
@@ -98,14 +98,11 @@ exports.user_current = async(req,res) => { //if i need to populate, find User by
 };
 
 exports.githubCallback = async(req,res,next) => { // error is because it wants data and salt arguments
-    console.log("github callback called")
     try{
         const {id,username,emails,photos} = req.user;
         let user = await User.findOne({'ids.githubId': id})
-        console.log(`found user is here! ${user}`)
         
         if(!user){
-            console.log(`the emails of user are ${emails}`)
             user = new User({
                 username:username, 
                 email:emails && emails[0] ? emails[0].value : null,
@@ -114,14 +111,11 @@ exports.githubCallback = async(req,res,next) => { // error is because it wants d
                     pfp:{url:photos && photos[0] ? photos[0].value : null}
                 }
             })
-            console.log(`new github user is ${user}`)
             await user.save();
         }
 
         req.login(user,(err) => {
             if(err) return next(err);
-            console.log(process.env.frontend_link, "frontend")
-            console.log(`signing you in please wait!`)
             return res.redirect(`${process.env.frontend_link}`)
         });
     }catch(err){

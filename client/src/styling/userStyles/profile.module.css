@@ -22,6 +22,7 @@
     margin:0;
     width:125px;
     height:125px;
+    border:2px solid hsl(var(--black-10))
 }
 
 button{
@@ -59,6 +60,18 @@ button{
     align-items:center;
 }
 .recommendedHolder h3{font-size:2.5rem;}
+.recommendedMapHolder{
+    gap:1.5rem;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+    max-height:30rem;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+}
+.recommendedMapHolder::-webkit-scrollbar{
+    display:none
+}
 
 .userMapped{
     width:18.125rem;height:4.5rem;
