@@ -103,7 +103,7 @@ function App() {
         return(
             <div key={user._id} className={style.userMapped}>
             <div className={style.usernameHolder}>
-                <div className={style.userPFP}></div>
+                <div className={style.userPFP}>{user?.details?.pfp?.url && <img src={user.details.pfp.url}/>}</div>
                 <h5 onClick={() => handleUserClick(user._id)}>{user.username}</h5>
             </div>
                 <button onClick={() => follow(user._id)}>Follow</button>

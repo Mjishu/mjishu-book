@@ -58,6 +58,8 @@ exports.user_update = async(req,res)=>{
                 url:req.body.image.url,
                 id:req.body.image.id
             },
+            location: req.body.location,
+            bio:req.body.bio
         },
     }
     await User.findByIdAndUpdate(req.params.id,userData)

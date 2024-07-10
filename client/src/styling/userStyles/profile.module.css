@@ -22,7 +22,6 @@
     width:125px;
     height:125px;
     border-radius:50%;
-
 }
 
 button{
@@ -76,7 +75,9 @@ button{
     border:none;
     border-radius:50%;
     width:45px;height:45px;
-    background:hsl(var(--black-30));
+}
+.userMappedPFP img{
+    width:45px;height:45px;
 }
 /**/
 
@@ -115,14 +116,33 @@ button{
     display:flex;
     justify-content:center;
 }
-.editInfo input{
+.editInfo div div input{
     width: fit-content;
+    border-radius:5px;
+    border:none;
+    background:#fff;
+    box-shadow: 0 43px 12px #00000000,
+    0 27px 11px #00000001,
+    0 15px 9px #00000005,
+    0 7px 7px #00000009,
+    0 2px 4px #00000010;
 }
 
 .editInfo{
     display:flex;
     flex-direction:column;
+    align-items:center;
 }
+.editInfo div{
+    display:flex;
+    gap: 0 1rem;
+}
+
+.editInfo div div{
+    display:flex;
+    flex-direction:column;
+}
+
 .imageInput{
     display:none;
 }

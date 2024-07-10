@@ -15,7 +15,9 @@ function Profile(){
     const [editData,setEditData] = React.useState({
         username:"",
         email:"",
-        image:""
+        image:"",
+        bio: "",
+        location: "",
     });
     const [followStatus,setFollowStatus] = React.useState({
         showFollowers: false,
@@ -92,7 +94,9 @@ function Profile(){
             username:editData.username, email:editData.email,
             image:{
                 url:imageUpload.secure_url, id:imageUpload.public_id
-            }
+            },
+            bio:editData.bio,
+            location:editData.location
         })}
 
         fetch(`/api/user/find/${id}/update`,fetchParams) //this call isnt being properly made? but submit calls func
@@ -111,10 +115,26 @@ function Profile(){
         <div className="dialogBackdrop">
         <div className={`${style.editBack} editBoard`}>
         <form className={style.editInfo} autoComplete="off" onSubmit={handleSubmit}>
+        <div>
+        <div>
         <label htmlFor="username">Username</label>
         <input type="text" name="username" value={editData?.username} onChange={handleChange}/>
+        </div>
+        <div>
         <label htmlFor="email">Email</label>
         <input type="email" name="email" value={editData?.email} onChange={handleChange}/>
+        </div>
+        </div>
+        <div>
+        <div>
+        <label htmlFor="bio">Bio</label>
+        <input type="text" onChange={handleChange} value={editData?.bio} name="bio" placeholder="tell us about yourself"/>
+        </div>
+        <div>
+        <label htmlFor="location">Location</label>
+        <input type="text" onChange={handleChange} value={editData?.location} name="location" placeholder="New York,NY"/>
+        </div>
+        </div>
         <div className={style.imageInputHolder} onClick={handleRefClick}>
         <label htmlFor="image" className={style.imageLabel}><img src="/icons/upload.svg"/>Choose a file</label>
         <input ref={usePfpRef} type="file" name="image" multiple={false} onChange={handleChange} className={style.imageInput}/>
@@ -195,7 +215,7 @@ function Profile(){
         return(
             <div key={user._id} className={style.userMapped}>
             <div className={style.userMappedInfo}>
-                <div className={style.userMappedPFP}></div>
+                <div className={style.userMappedPFP}>{user?.details?.pfp?.url && <img src={user.details.pfp.url}/>}</div>
                 <h5 onClick={() => navigate(`/profile/${user._id}`)}>{user.username}</h5>
             </div>
                 <button onClick={() => followUser(user._id)}>Follow</button>
@@ -209,9 +229,10 @@ function Profile(){
         <div className={style.bodyHolder}>
         <div className={style.bodyInfo}>
         <header className={style.header}>
-        <div className={`${profileUser.details.pfp.url ? "" :style.profilePicture} ${style.profile_pic_holder}`}>
+        <div className={`${profileUser?.details?.pfp?.url ? "" :style.profilePicture} ${style.profile_pic_holder}`}>
         {profileUser?.details?.pfp?.url && 
-            <img className={style.profile_pic_holder} src={profileUser.details.pfp.url} alt="PFP"/>}</div>
+            <img className={style.profile_pic_holder} src={profileUser.details.pfp.url} alt="PFP"/>
+        }</div>
         <div className={style.userText}>
         <h1 className={style.username}>{profileUser?.username}</h1>
         <div className={style.followHolder}>
