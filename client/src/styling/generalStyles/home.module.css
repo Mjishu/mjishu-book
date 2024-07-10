@@ -110,7 +110,7 @@
     border:none;
     border-radius:50%;
 }
-.userPFP img{width:40px;height:40px;}
+.userPFP img{width:40px;height:40px;border-radius:50%;}
 .usernameHolder{
     font-size:1.25rem;
 }

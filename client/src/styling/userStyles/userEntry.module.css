@@ -109,3 +109,7 @@ footer{
 .togglePassword img{
     width:1.5rem;
 }
+
+.alternateSignIn:hover{
+    color:hsl(var(--primary))
+}

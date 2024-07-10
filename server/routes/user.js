@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport")
 
 const userController = require("../controllers/userController");
 
@@ -24,5 +25,13 @@ router.get("/logout", userController.user_sign_out);
 router.post("/find/:id/follow", userController.user_following);
 
 router.post("/find/:id/unfollow", userController.user_unfollowing)
+
+//github
+router.get("/github", userController.githubAuth);
+
+router.get("/github/callback",
+    userController.githubAuthCallback,
+    userController.githubCallback
+)
 
 module.exports = router;

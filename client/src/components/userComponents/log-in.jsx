@@ -60,6 +60,11 @@ function LogIn(){
         .catch(error => console.error(`error trying to use demo account! ${error}`))
     }
 
+    function handleGithub(){
+        console.log("calling handle git")
+        window.location.href = "http://localhost:3000/api/user/github";
+    }
+
     return(
         <div className={style.content}>
         <div className={style.loginImage}></div>
@@ -94,7 +99,7 @@ function LogIn(){
         <div className={style.signInHolder}>
         <button className={`${style.signInButton} beautiful-shadow-1`}>Log In</button>
         <button onClick={handleDummyAccount} className={`${style.signInButton} beautiful-shadow-1`}>Log in as demo user</button>
-        <button className={`${style.alternateSignIn} beautiful-shadow-1`}>Sign in with SITE</button>
+        <button onClick={handleGithub} className={`${style.alternateSignIn} beautiful-shadow-1`}>Sign in with github</button>
         </div>
         </form>
         </div>

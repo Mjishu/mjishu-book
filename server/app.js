@@ -11,6 +11,8 @@ const passport = require("passport");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const LocalStrategy = require("passport-local");
+const GithubStrategy = require("passport-github2").Strategy;
+
 const User = require("./models/user");
 const bcrypt = require("bcrypt")
 const cloudinary = require("cloudinary").v2
@@ -48,7 +50,7 @@ app.use(passport.session());
 
 //Cors
 const allowedOrigins = [
-    "http://localhost:3000"
+    process.env.frontend_link,
 ]
 const corsOptions = {
     origin:allowedOrigins,
@@ -82,6 +84,17 @@ passport.use(new LocalStrategy({
         return done(err);
     }
 }));
+
+passport.use(new GithubStrategy({
+    clientID :process.env.GITHUB_CLIENT_ID,
+    clientSecret:process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: `http://localhost:3000/api/user/github/callback`
+},
+function(accessToken,refreshToken,profile,done){
+
+    done(null,profile)
+}
+))
 
 passport.serializeUser((user,done)=>{
     done(null,user.id)

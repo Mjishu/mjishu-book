@@ -14,14 +14,14 @@
     align-content:center;
 }
 .profilePicture{
-    background-color:hsl(var(--light))
+    background-color:hsl(var(--light));
 }
 .profile_pic_holder{
+    border-radius:50%;
     padding:0;
     margin:0;
     width:125px;
     height:125px;
-    border-radius:50%;
 }
 
 button{
@@ -78,6 +78,7 @@ button{
 }
 .userMappedPFP img{
     width:45px;height:45px;
+    border-radius:50%;
 }
 /**/
 

@@ -25,6 +25,7 @@ exports.user_create = async(req,res)=> {
     }
 };
 
+
 exports.find_all = async(req,res)=> {
     try{
         const foundUsers = await User.find({_id: {$ne:req.user._id}}).populate('followers following').exec()
@@ -42,6 +43,7 @@ exports.find_one = async(req,res)=>{
 
 exports.user_update = async(req,res)=>{
     id = req.params.id;
+    console.log(req.body)
     if(id != req.user._id){return res.status(500).json({message:"Wrong user"})}
     const user = await User.findById(id).exec();
     if(user.details.pfp.id){
@@ -50,16 +52,17 @@ exports.user_update = async(req,res)=>{
         })
     }
 
+
     const userData ={
-        username: req.body.username,
-        email:req.body.email,
+        username:user.username !== req.body.username && req.body.username,
+        email:user.email !== req.body.email && req.body.email,
         details:{
             pfp:{
-                url:req.body.image.url,
-                id:req.body.image.id
+                url:req.body.image&& req.body.image.url,
+                id:req.body.image&& req.body.image.id
             },
-            location: req.body.location,
-            bio:req.body.bio
+            location: user.details.location !== req.body.location && req.body.location,
+            bio:user.details.bio !== req.body.bio && req.body.bio
         },
     }
     await User.findByIdAndUpdate(req.params.id,userData)
@@ -84,7 +87,44 @@ exports.user_current = async(req,res) => { //if i need to populate, find User by
         }
         res.json(req.user);
     }catch(error){res.status(500).json({message:`error fetching current user ${error}`})}
+};
+
+exports.githubCallback = async(req,res,next) => { // error is because it wants data and salt arguments
+    console.log("github callback called")
+    try{
+        const {id,username,emails,photos} = req.user;
+        let user = await User.findOne({'ids.githubId': id})
+        console.log(`found user is here! ${user}`)
+        
+        if(!user){
+            console.log(`the emails of user are ${emails}`)
+            user = new User({
+                username:username, 
+                email:emails && emails[0] ? emails[0].value : null,
+                ids:{githubId:id},
+                details:{
+                    pfp:{url:photos && photos[0] ? photos[0].value : null}
+                }
+            })
+            console.log(`new github user is ${user}`)
+            await user.save();
+        }
+
+        req.login(user,(err) => {
+            if(err) return next(err);
+            console.log(process.env.frontend_link, "frontend")
+            console.log(`signing you in please wait!`)
+            return res.redirect(`${process.env.frontend_link}`)
+        });
+    }catch(err){
+        console.error(`there was an error trying to use github: ${err}`)
+        next(err);
+    }
 }
+
+exports.githubAuth = passport.authenticate("github");
+
+exports.githubAuthCallback = passport.authenticate("github", {failureRedirect:`${process.env.frontend_link}/login`})
 
 exports.user_sign_in = async(req,res,next)=>{
     try{
@@ -103,6 +143,7 @@ exports.user_sign_in = async(req,res,next)=>{
                     console.log(`there was an error logging in ${err}`);
                     return next(err)
                 };
+                console.log("signed in as", req.user.username)
                 res.json({message:"success",user:req.user})
             })
         })(req,res,next);

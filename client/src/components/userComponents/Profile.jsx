@@ -15,7 +15,7 @@ function Profile(){
     const [editData,setEditData] = React.useState({
         username:"",
         email:"",
-        image:"",
+        image:false,
         bio: "",
         location: "",
     });
@@ -29,8 +29,17 @@ function Profile(){
     const usePfpRef= React.useRef(null);
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
-
     React.useEffect(()=>{
+        if(!isLoading){
+            if(!currentUser || currentUser.message === "none"){
+                navigate("/login")
+            }else{
+                callApis();
+            }
+        }
+    },[id,currentUser,isLoading,navigate])
+
+    function callApis(){
         fetch(`/api/post/find/user/${id}`)
             .then(res=>res.json())
             .then(data=> setUserPosts(data))
@@ -50,7 +59,7 @@ function Profile(){
         .catch(error => console.error(`error fetching recommended user:${error}`))
 
         fetch("/api/uploadform").then(res=>res.json()).then(data=>setCloud(data)).catch(err=>console.error(err))
-    },[id]);
+    };
 
     React.useEffect(()=>{
         setEditData(prevData =>({...prevData, username:profileUser?.username, email:profileUser?.email}))
@@ -93,7 +102,7 @@ function Profile(){
         const fetchParams = {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({
             username:editData.username, email:editData.email,
             image:{
-                url:imageUpload.secure_url, id:imageUpload.public_id
+                url:imageUpload?.secure_url, id:imageUpload?.public_id
             },
             bio:editData.bio,
             location:editData.location
@@ -206,6 +215,7 @@ function Profile(){
                 data.message === "success" && navigate("/auth");
             })
             .catch(err => console.error(`error logging out ${err}`))
+        window.location.reload();
     }
 
     if(loading || isLoading){return <h1>Loading...</h1>}
