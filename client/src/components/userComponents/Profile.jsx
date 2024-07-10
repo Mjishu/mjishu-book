@@ -164,6 +164,11 @@ function Profile(){
         </div>
     )
 
+    function openUser(id){
+        navigate(`/profile/${id}`)
+        setFollowStatus(prev => ({...prev,showFollowing:false,showFollowers:false}))
+    }
+
     function unfollowUser(id){
         fetch(`/api/user/find/${id}/unfollow`,{method:"POST",headers:{"Content-Type":"application/json"},
             body:JSON.stringify({id:profileUser._id})})
@@ -171,7 +176,7 @@ function Profile(){
             .then(data => console.log(data))
             .catch(error => console.error(`there was an error trying to unfollow user: ${error}`))
     }
-    function followUser(){
+    function followUser(id){
         fetch(`/api/user/find/${id}/follow`, {method:"POST", headers:{'Content-Type':"application/json"},
         body:JSON.stringify({id:profileUser._id})})
         .then(res => res.json()).then(data => console.log(data))
@@ -181,7 +186,7 @@ function Profile(){
     function ShowsFollowing(){
         const followingMapped = profileUser.following.map(user => {
             return (
-                <div key={user._id}>
+                <div key={user._id} onClick={() => openUser(user._id)}>
                 <h6>{user.username}</h6>
                 {currentUser._id === profileUser._id && <button onClick={() => unfollowUser(user._id)}>unfollow</button>}
                 </div>
@@ -200,7 +205,7 @@ function Profile(){
     function ShowsFollowers(){
         const followersMapped = profileUser.followers.map(user =>{
             return (
-                <div key={user._id} >
+                <div key={user._id} onClick={() => openUser(user._id)} >
                 <h6>{user.username}</h6>
                 </div>
             )

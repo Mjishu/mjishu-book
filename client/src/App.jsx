@@ -131,7 +131,9 @@ function App() {
         </div>
         <div className={style.newUsers}>
             <h6 className={style.newUsersTitle}>New Users </h6>
+            <div className={style.newUsersHolder}>
             {allUsersMapped}
+        </div>
         </div>
         </div>
         </div>
