@@ -2,13 +2,16 @@ import React from "react";
 import MessagePreview from "./MessagePreview";
 import style from "../../styling/messageStyles/messagedisplay.module.css";
 import {format} from "date-fns";
+import {useUser} from "../userComponents/UserContext"
 
 //allMessages currentUser, handleClick?
 export default function UserMessages(props){
+    const {currentUser,isLoading} = useUser();
     
     const allMessagesMapped = props.allMessages && props.allMessages.map(message => {
-        const username = message.users.filter(userId => userId !== props.currentUser._id)
+        const username = message.users.filter(userId => userId._id !== currentUser._id)
         const formatDate = format(message.updatedAt, "do MMMM")
+        console.log(username)
 
         return (
             <MessagePreview timestamp={formatDate} 

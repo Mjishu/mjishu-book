@@ -15,6 +15,16 @@ function MessageHolders(){
     const [findUsers,setFindUsers] = React.useState(false);
 
     React.useEffect(()=>{
+        if(!isLoading){
+            if(!currentUser || currentUser.message === "none"){
+                navigate("/login")
+            }else{
+                callApis();
+            }
+        }
+    },[currentUser,isLoading,navigate])
+
+    function callApis(){
         currentUser && fetch(`/api/message/find/user/${currentUser._id}`)//set this to user id but need to do useContext first
         .then(res => res.json())
         .then(data => setUserMessages(data))
@@ -30,7 +40,7 @@ function MessageHolders(){
             console.error(`there was an error fetching all users: ${err}`)
             setLoading(false)
         })
-    },[currentUser]);
+    }
 
      function handlePostClick(id){
          navigate(`/messages/${id}`)
@@ -47,6 +57,7 @@ function MessageHolders(){
         .then(res => res.json())
         .then(data => data.message === "success" && navigate(`/messages/${data.id}`))
         .catch(error => console.error(`there was an error creating message: ${error}`))
+        setFindUsers(false);
     }
 
     function openMessage(id){

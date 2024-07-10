@@ -7,7 +7,7 @@ import {format} from "date-fns"
 import Post from "../postComponents/Post.jsx"
 
 function Profile(){
-    const {currentUser,isLoading} = useUser();
+    const {currentUser,isLoading, setCurrentUser} = useUser();
     const [loading,setLoading] = React.useState(true);
     const [profileUser,setProfileUser] = React.useState();
     const [userPosts,setUserPosts] = React.useState();
@@ -120,6 +120,12 @@ function Profile(){
         setEditData(prev => ({...prev, [name]: type==="file" ? files[0] : value}))
     }
 
+    function handleProfileDelete(){
+        fetch(`/api/user/find/${profileUser._id}/delete`,{method:"DELETE"})
+        .then(res => res.json()).then(data => data.message==="success" && navigate("/login"))
+        .catch(err => console.error(err))
+    }
+
     const editInformation = (
         <div className="dialogBackdrop">
         <div className={`${style.editBack} editBoard`}>
@@ -153,6 +159,7 @@ function Profile(){
         <button>Submit</button>
         </div>
         </form>
+        <button onClick={handleProfileDelete}>Delete</button>
         </div>
         </div>
     )
@@ -212,10 +219,9 @@ function Profile(){
             .then(res =>res.json()) 
             .then(data => {
                 setCurrentUser(null);
-                data.message === "success" && navigate("/auth");
+                data.message === "success" && navigate("/login");
             })
             .catch(err => console.error(`error logging out ${err}`))
-        window.location.reload();
     }
 
     if(loading || isLoading){return <h1>Loading...</h1>}

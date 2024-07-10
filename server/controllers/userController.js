@@ -5,6 +5,9 @@ const {body,validationResult} = require("express-validator");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 const cloudinary = require("cloudinary").v2
+const Message = require("../models/message");
+const Comment = require("../models/comment");
+const Post = require("../models/post");
 
 exports.user_create = async(req,res)=> {
     try{
@@ -69,10 +72,15 @@ exports.user_update = async(req,res)=>{
     res.json({message:"success"})
 };
 
+//delete messages,comment,post
 exports.user_delete = async(req,res)=>{
     const id = req.params.id;
+    if(req.user._id != id){return}
     try{
-        const deletedUser = await User.findByIdAndDelete(id)
+        const deletedUser = await User.findByIdAndDelete(id);
+        const postWithId = await Post.deleteMany({author:id});
+        const messageWithId = await Message.deleteMany({users: {$in:id}});
+        const commentsWithId = await Comment.deleteMany({author:id}); 
 
         if(!deletedUser){return res.status(404).json({message:`user not found!`})}
 

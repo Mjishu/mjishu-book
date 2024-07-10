@@ -8,6 +8,7 @@
     border-right: 2px solid hsl(var(--black-50));
     align-items:center;
     position:sticky;
+    top:0px;
 }
 
 .navElement{
