@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const path = require('path');
+const http = require("http");
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -14,13 +15,18 @@ const LocalStrategy = require("passport-local");
 const GithubStrategy = require("passport-github2").Strategy;
 
 const User = require("./models/user");
-const bcrypt = require("bcrypt")
-const cloudinary = require("cloudinary").v2
-const Multer = require("multer")
+const bcrypt = require("bcrypt");
+const cloudinary = require("cloudinary").v2;
+const Multer = require("multer");
 
+//websocket
+const {WebSocketServer} = require("ws");
+const uuidv4 = require("uuid").v4
 
 const app = express();
 const port = process.env.PORT || 3000;
+const server = http.createServer(app);
+const wsServer = new WebSocketServer({server, path:"/api/message/current-updates"})
 
 //Mongo Connection
 mongoose.set("strictQuery", "false");
@@ -40,10 +46,10 @@ cloudinary.config({
 })
 
 app.use(session({
-        secret: process.env.SECRET_KEY, 
-        resave:false, 
-        saveUninitialized:false, 
-        store: MongoStore.create({mongoUrl: process.env.MONGO_URI
+    secret: process.env.SECRET_KEY, 
+    resave:false, 
+    saveUninitialized:false, 
+    store: MongoStore.create({mongoUrl: process.env.MONGO_URI
     })}))
 app.use(passport.initialize());
 app.use(passport.session());
@@ -64,6 +70,79 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//WebSocket
+const url = require("url");
+const Message = require("./models/message")
+const connections = {};
+const users = {};
+
+async function handleMessage(bytes,  uuid){ //should return postFOund
+    try{
+        const message = JSON.parse(bytes.toString());
+        console.log("recieved message: ",message)
+
+        const user = users[uuid]
+        const messageFound = await Message.findById(message.messageid).populate("users body.author")
+        if(messageFound){
+            users[uuid].currentMessageId = message.messageid
+            return messageFound}
+        else{
+            console.log(`message not found for ${message.messageid}`);
+            return null
+        }
+        }
+    catch(error){
+        console.error(`error handling message: ${error}`)
+        return null}
+}
+function handleClose(uuid){
+    console.log(`${uuid} has left`)
+    delete connections[uuid]
+    delete users[uuid]
+}
+function broadcastMessage(messageData){
+    Object.values(connections).forEach(connection =>{
+        connection.send(JSON.stringify({messageData}))
+    })
+}
+
+//how to get real time updates ?
+    wsServer.on("connection",async(connection,request) => {
+        const uuid = uuidv4();
+        const {username,messageid} = url.parse(request.url,true).query
+        console.log(`username is ${username}`)
+        console.log(`current id is: ${uuid}`)
+        const changeStream = Message.watch();
+
+        changeStream.on("change", async(change) => { /*seems to subscribe every user thats connected to the connection 
+                i.e its not individual to each message, as long as any user is signed in and on the messages page they are 
+                subscribed to recieve the info?, should i call the web socket on messagebodyjsx instead? the part that actually
+                displays the messages?*/
+            if(change.documentKey._id.toString() === messageid){
+                const updatedMessage = await Message.findById(messageid).populate("users body.author");
+                if(updatedMessage){broadcastMessage(updatedMessage)}
+                else{console.log("message didnt exist")}
+            }
+        })
+
+        connections[uuid] = connection;
+
+        users[uuid]= { //idk what to have here? maybe make a query that sends currentUser.username?
+            username:username, 
+            currentMessageId:messageid
+        }
+        connection.on("message", async(message) => {
+            console.log("woohoo new message")
+            const messageReturn = await handleMessage(message,uuid)
+            if(messageReturn){ //how to make it so that it sends new data to front end on change?
+                // if submit button is clickedo n front end by any user, make it so all users get a new message returned?
+                console.log(`message return is good! sending it to front end`)
+                connection.send(JSON.stringify({messageData:messageReturn}))
+            }
+        })
+        connection.on("close", () => handleClose(uuid) )
+    })
 
 //Authentication
 passport.use(new LocalStrategy({
@@ -90,10 +169,10 @@ passport.use(new GithubStrategy({
     clientSecret:process.env.GITHUB_CLIENT_SECRET,
     callbackURL: `http://localhost:3000/api/user/github/callback`
 },
-function(accessToken,refreshToken,profile,done){
+    function(accessToken,refreshToken,profile,done){
 
-    done(null,profile)
-}
+        done(null,profile)
+    }
 ))
 
 passport.serializeUser((user,done)=>{
@@ -104,7 +183,7 @@ passport.deserializeUser(async (id,done)=>{
     try{
         const user = await User.findById(id);
         done(null,user);
-  }catch(err){done(err)}
+    }catch(err){done(err)}
 })
 
 //Route Imports
@@ -126,15 +205,16 @@ app.get("/api/uploadform", async(req,res)=>{
 
 //Error Handling
 app.use(function(req, res, next) {
-  next(createError(404));
+    next(createError(404));
 });
 app.use(function(err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    res.status(err.status || 500);
 });
 
 //Export
-app.listen(port, () => { 
+server.listen(port, () => { 
     console.log(`Listening on port ${port}`)
 })
+

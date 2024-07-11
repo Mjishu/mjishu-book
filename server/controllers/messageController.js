@@ -1,5 +1,5 @@
 const Message = require("../models/message");
-const {ObjectId } = require("mongodb")
+const {ObjectId } = require("mongodb");
 
 exports.message_create = async(req,res)=>{
     try{
@@ -17,10 +17,6 @@ exports.find_user_messages = async(req,res)=>{
         const foundMessages = await Message.find({users:id}).populate("users").exec();
         res.json(foundMessages);
     }catch(error){res.status(500).json({message:`error finding messages ${error}`})}
-};
-
-exports.find_all = async(req,res) =>{ //idk if i need this one because it doesnt make sense to get every message
-    res.json({message: "finding all messages"})
 };
 
 exports.message_delete = async(req,res)=>{
@@ -44,6 +40,7 @@ exports.message_add = async(req,res)=>{
         if(updatedMessage.matchCount === 0){
             throw new Error(`no matching message was found`)
         };
+        //notifyMessageUpdate(updatedMessage._id)
         res.json({message:"success"})
     }catch(err){res.status(500).json({message:`error adding message: ${err}`})}
 };
@@ -58,4 +55,3 @@ exports.message_open = async(req,res)=>{
         res.json(messageFound)
     }catch(err){res.status(500).json({message:`error opening message ${err}`})}
 }
-
