@@ -18,7 +18,9 @@ exports.user_create = async(req,res)=> {
             details:{
                 pfp:{
                     url: "",
-                }
+                },
+                bio:"",
+                location:""
             }
         })
         await newUser.save()
@@ -46,10 +48,9 @@ exports.find_one = async(req,res)=>{
 
 exports.user_update = async(req,res)=>{
     const id = req.params.id;
-    console.log(`body is `,req.body)
     if(id != req.user._id){return res.status(500).json({message:"Wrong user"})}
     const user = await User.findById(id).exec();
-    if(user.details.pfp.id && req.body.image && req.body.body.image.url !== undefined){
+    if(user.details.pfp.id && req.body.image && req.body.image.url !== undefined){
         cloudinary.uploader.destroy(user.details.pfp.id, (error,result) => {
             console.log(result,error)
         })
@@ -61,10 +62,13 @@ exports.user_update = async(req,res)=>{
         email:req.body.email,
         details:{
             location: req.body.location,
-            bio:req.body.bio
+            bio:req.body.bio,
+            pfp:{
+                url: user.details.pfp.url,
+                id:user.details.pfp.id
+            }
         },
     }
-    console.log("user data", userData)
     if(req.body.image && req.body.image.url !== undefined){
         userData.details.pfp ={
             url: req.body.image.url,
