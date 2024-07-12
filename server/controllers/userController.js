@@ -45,11 +45,11 @@ exports.find_one = async(req,res)=>{
 };
 
 exports.user_update = async(req,res)=>{
-    id = req.params.id;
-    console.log(req.body)
+    const id = req.params.id;
+    console.log(`body is `,req.body)
     if(id != req.user._id){return res.status(500).json({message:"Wrong user"})}
     const user = await User.findById(id).exec();
-    if(user.details.pfp.id){
+    if(user.details.pfp.id && req.body.image && req.body.body.image.url !== undefined){
         cloudinary.uploader.destroy(user.details.pfp.id, (error,result) => {
             console.log(result,error)
         })
@@ -57,16 +57,19 @@ exports.user_update = async(req,res)=>{
 
 
     const userData ={
-        username:user.username !== req.body.username && req.body.username,
-        email:user.email !== req.body.email && req.body.email,
+        username:req.body.username,
+        email:req.body.email,
         details:{
-            pfp:{
-                url:req.body.image&& req.body.image.url,
-                id:req.body.image&& req.body.image.id
-            },
-            location: user.details.location !== req.body.location && req.body.location,
-            bio:user.details.bio !== req.body.bio && req.body.bio
+            location: req.body.location,
+            bio:req.body.bio
         },
+    }
+    console.log("user data", userData)
+    if(req.body.image && req.body.image.url !== undefined){
+        userData.details.pfp ={
+            url: req.body.image.url,
+            id:req.body.image.id
+        }
     }
     await User.findByIdAndUpdate(req.params.id,userData)
     res.json({message:"success"})

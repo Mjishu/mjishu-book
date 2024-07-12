@@ -62,8 +62,10 @@ function Profile(){ //check if editData is different from the previous data, may
     };
 
     React.useEffect(()=>{
-        setEditData(prevData =>({...prevData, username:profileUser?.username, email:profileUser?.email}))
-        console.log(profileUser)
+        const bio = profileUser?.details !==undefined? profileUser.details.bio : "";
+        const location = profileUser?.details!== undefined ? profileUser.details.location : "";
+        setEditData(prevData =>({...prevData, username:profileUser?.username, email:profileUser?.email,
+            bio:profileUser?.details?.bio, location:profileUser?.details?.location}))
     },[profileUser])
 
     function handlePostClick(id){
@@ -110,8 +112,8 @@ function Profile(){ //check if editData is different from the previous data, may
             image:{
                 url:imageUpload?.secure_url, id:imageUpload?.public_id
             },
-            bio:profileUser.details.bio !==editData.bio ? editData.bio : profileUser.details.bio,
-            location:profileUser.details.location !== editData.location? editData.location : profileUser.details.location
+            bio:editData.bio,
+            location: editData.location
         })}
 
         fetch(`/api/user/find/${id}/update`,fetchParams) //this call isnt being properly made? but submit calls func
