@@ -102,8 +102,15 @@ function handleClose(uuid){
     delete users[uuid]
 }
 function broadcastMessage(messageData){
-    Object.values(connections).forEach(connection =>{
-        connection.send(JSON.stringify({messageData}))
+    /*Object.values(connections).forEach(connection =>{
+        connection.send(JSON.stringify({messageData})) //only send this to users who are in messageData.users
+    })*/
+    const relevantUsers = messageData.users.map(user => user.username)//sends users who are in chat
+
+    Object.entries(connections).forEach(([uuid,connection]) =>{
+        if(relevantUsers.includes(users[uuid].username)){
+            connection.send(JSON.stringify({messageData})) //only send this to users who are in messageData.users
+        }
     })
 }
 
@@ -115,10 +122,7 @@ function broadcastMessage(messageData){
         console.log(`current id is: ${uuid}`)
         const changeStream = Message.watch();
 
-        changeStream.on("change", async(change) => { /*seems to subscribe every user thats connected to the connection 
-                i.e its not individual to each message, as long as any user is signed in and on the messages page they are 
-                subscribed to recieve the info?, should i call the web socket on messagebodyjsx instead? the part that actually
-                displays the messages?*/
+        changeStream.on("change", async(change) => { //look at obsidian
             if(change.documentKey._id.toString() === messageid){
                 const updatedMessage = await Message.findById(messageid).populate("users body.author");
                 if(updatedMessage){broadcastMessage(updatedMessage)}

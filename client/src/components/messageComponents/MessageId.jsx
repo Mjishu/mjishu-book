@@ -31,7 +31,7 @@ function MessageId(){
     },[readyState,id,sendJsonMessage]);
 
     React.useEffect(() => {
-        if(lastJsonMessage){
+        if(lastJsonMessage && lastJsonMessage.messageData._id === id){
             setMessageData(lastJsonMessage.messageData);
             setLoading(false);
         }
