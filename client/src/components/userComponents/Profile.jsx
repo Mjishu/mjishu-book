@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom"
 import {format} from "date-fns"
 import Post from "../postComponents/Post.jsx"
 
-function Profile(){
+function Profile(){ //check if editData is different from the previous data, maybe make image in its own state holder
     const {currentUser,isLoading, setCurrentUser} = useUser();
     const [loading,setLoading] = React.useState(true);
     const [profileUser,setProfileUser] = React.useState();
@@ -26,7 +26,7 @@ function Profile(){
     const [recommendedUsers, setRecommendedUsers] = React.useState({})
     const navigate = useNavigate();
     const [cloud,setCloud] = React.useState()
-    const usePfpRef= React.useRef(null);
+    const usePfpRef = React.useRef(null)
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
     React.useEffect(()=>{
@@ -54,15 +54,16 @@ function Profile(){
             .catch(error => console.error(`error fetching post user: ${error}`))
 
         fetch('/api/user/find')
-        .then(res => res.json())
-        .then(data => setRecommendedUsers(data))
-        .catch(error => console.error(`error fetching recommended user:${error}`))
+            .then(res => res.json())
+            .then(data => setRecommendedUsers(data))
+            .catch(error => console.error(`error fetching recommended user:${error}`))
 
         fetch("/api/uploadform").then(res=>res.json()).then(data=>setCloud(data)).catch(err=>console.error(err))
     };
 
     React.useEffect(()=>{
         setEditData(prevData =>({...prevData, username:profileUser?.username, email:profileUser?.email}))
+        console.log(profileUser)
     },[profileUser])
 
     function handlePostClick(id){
@@ -77,35 +78,40 @@ function Profile(){
         const formatedDate = format(post.createdAt ,"do MMMM")
 
         return <Post currentUser={currentUser} key={post._id}
-            author={post.author.username} body={post.message}
-            time={formatedDate} id={post._id} handleClick={handlePostClick}
-            likes={post.likes}/>
+        author={post.author.username} body={post.message}
+        time={formatedDate} id={post._id} handleClick={handlePostClick}
+        likes={post.likes}/>
     })
     async function uploadImage(file){ 
-        const data = new FormData();
-        data.append("file",file);
-        data.append("upload_preset", "jfhbuazc");
-        data.append("folder","profile_pictures")
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud.cloud_name}/image/upload`,
-            {method:"POST", body:data}
-        );
-        const img = await res.json();
-        return {
-            secure_url: img.secure_url,
-            public_id: img.public_id
-        };
+        try{
+            if(editData.image){
+                const data = new FormData();
+                data.append("file",file);
+                data.append("upload_preset", "jfhbuazc");
+                data.append("folder","profile_pictures")
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud.cloud_name}/image/upload`,
+                    {method:"POST", body:data}
+                );
+                const img = await res.json();
+                return {
+                    secure_url: img.secure_url,
+                    public_id: img.public_id
+                }
+            };
+        }catch(error){console.error(`there was an error sending image: ${error}`)}
     }
 
-    async function handleSubmit(e){
+    async function handleSubmit(e){ //check if data is different from incoming data
         e.preventDefault()
         const imageUpload = await uploadImage(editData.image)
         const fetchParams = {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-            username:editData.username, email:editData.email,
+            username:profileUser.username !== editData.username ? editData.username : profileUser.username,
+            email:profileUser.email !== editData.email ? editData.email :profileUser.email,
             image:{
                 url:imageUpload?.secure_url, id:imageUpload?.public_id
             },
-            bio:editData.bio,
-            location:editData.location
+            bio:profileUser.details.bio !==editData.bio ? editData.bio : profileUser.details.bio,
+            location:profileUser.details.location !== editData.location? editData.location : profileUser.details.location
         })}
 
         fetch(`/api/user/find/${id}/update`,fetchParams) //this call isnt being properly made? but submit calls func
@@ -122,8 +128,8 @@ function Profile(){
 
     function handleProfileDelete(){
         fetch(`/api/user/find/${profileUser._id}/delete`,{method:"DELETE"})
-        .then(res => res.json()).then(data => data.message==="success" && navigate("/login"))
-        .catch(err => console.error(err))
+            .then(res => res.json()).then(data => data.message==="success" && navigate("/login"))
+            .catch(err => console.error(err))
     }
 
     const editInformation = (
@@ -178,9 +184,9 @@ function Profile(){
     }
     function followUser(id){
         fetch(`/api/user/find/${id}/follow`, {method:"POST", headers:{'Content-Type':"application/json"},
-        body:JSON.stringify({id:profileUser._id})})
-        .then(res => res.json()).then(data => console.log(data))
-        .catch(error => console.error(`error trying to follow user`))
+            body:JSON.stringify({id:profileUser._id})})
+            .then(res => res.json()).then(data => console.log(data))
+            .catch(error => console.error(`error trying to follow user`))
     }
 
     function ShowsFollowing(){
@@ -233,16 +239,16 @@ function Profile(){
 
     const recommendedMapped = recommendedUsers?.length > 0 && recommendedUsers.filter(user => 
         !currentUser?.following.includes(user._id)).slice(0,3).map(user=>{
-        return(
-            <div key={user._id} className={style.userMapped}>
-            <div className={style.userMappedInfo}>
+            return(
+                <div key={user._id} className={style.userMapped}>
+                <div className={style.userMappedInfo}>
                 <div className={style.userMappedPFP}>{user?.details?.pfp?.url && <img src={user.details.pfp.url}/>}</div>
                 <h5 onClick={() => navigate(`/profile/${user._id}`)}>{user.username}</h5>
-            </div>
+                </div>
                 <button onClick={() => followUser(user._id)}>Follow</button>
-            </div>
-        )
-    })
+                </div>
+            )
+        })
 
     return(
         <div className="content">
@@ -277,7 +283,7 @@ function Profile(){
         </div>
         {currentUser?._id === profileUser?._id &&<button className={style.editButton}
             onClick={() => setStatus(prevStat=>({...prevStat,showEdit:true}))}>Edit Profile
-        </button>}
+            </button>}
         {status.showEdit && editInformation}
         {followStatus.showFollowing && ShowsFollowing()}
         {followStatus.showFollowers && ShowsFollowers()}

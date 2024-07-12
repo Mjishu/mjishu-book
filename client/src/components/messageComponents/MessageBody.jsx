@@ -49,7 +49,6 @@ function MessageBody(props){
 
     function handleSubmit(e){
         e.preventDefault();
-        console.log(messageBody)
 
         const fetchParams = {method:'POST',
             headers:{"Content-Type":"application/json"},

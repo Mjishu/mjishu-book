@@ -154,7 +154,7 @@ function PostDetail(){
         <div className={style.bodyInfo}>
         <div className={style.insideBodyInfo}>
         <div className={style.postData}>
-        <h3 className={style.postAuthor}>{postData.author.username}</h3>
+        <h3 className={style.postAuthor} onClick={() => navigate(`/profile/${postData.author._id}`)}>{postData.author.username}</h3>
         <div className={`${style.postImage} beautiful-shadow-1`}>{postData.image && <img  src={postData.image.url}
             alt="Post Image" className={style.postImage}/>}</div>
         <div className={style.subDetails}>
