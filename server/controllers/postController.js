@@ -18,17 +18,8 @@ exports.post_create = async(req,res)=>{
 exports.post_update = async(req,res)=>{
     //should find current post, update teh image url, and then delete the image from cloudinary
     const post = await Post.findById(req.params.id).exec();
-    if(post.image.id){
-        cloudinary.uploader.destroy(post.image.id, (error,result) => {
-            console.log(result,error)
-        })
-    }
     const postDetails = {
         message:req.body.message, 
-        image:{
-            url: req.body.image.url,
-            id:req.body.image.id
-        },
     }
     const updatedPost = await Post.findByIdAndUpdate(req.params.id,postDetails);
     res.json({message:"success"})

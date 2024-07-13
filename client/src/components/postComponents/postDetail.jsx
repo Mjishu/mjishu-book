@@ -19,7 +19,6 @@ function PostDetail(){
     });
     const [editData,setEditData] = React.useState({
         message: "",
-        image:"",
     });
     const [cloud, setCloud] = React.useState();
     const fileInputRef = React.useRef(null)
@@ -58,9 +57,6 @@ function PostDetail(){
         setEditData(prevData => ({...prevData, [name]:type==="file"? files[0] : value}))
     }
 
-    function handleButtonClick(){
-        fileInputRef.current.click();
-    }
     async function uploadImage(file){ 
         const data = new FormData();
         data.append("file",file);
@@ -120,10 +116,6 @@ function PostDetail(){
         <form onSubmit={handleSubmit} className={`${style.form} editBoard`}>
         <label htmlFor="message">Message</label>
         <textarea className={`${style.textarea} beautiful-shadow-1`} name="message" value={editData.message} onChange={handleChange}/>
-            <div className={style.imageInputHolder} onClick={handleButtonClick}>
-            <label htmlFor="image" className={style.imageLabel}><img src="/icons/upload.svg"/>Choose a file</label>
-            <input ref={fileInputRef} type="file" name="image" multiple={false} onChange={handleChange} className={style.imageInput}/>
-        </div>
         <div className={style.popupButtonHolder}>
         <button className={`${style.popupButtons} beautiful-shadow-1`} 
         onClick={() => setStatus(prevStatus => ({...prevStatus,showEdit:false}))}>Cancel</button>

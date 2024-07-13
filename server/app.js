@@ -118,15 +118,13 @@ function broadcastMessage(messageData){
     wsServer.on("connection",async(connection,request) => {
         const uuid = uuidv4();
         const {username,messageid} = url.parse(request.url,true).query
-        console.log(`username is ${username}`)
-        console.log(`current id is: ${uuid}`)
         const changeStream = Message.watch();
 
         changeStream.on("change", async(change) => { //look at obsidian
             if(change.documentKey._id.toString() === messageid){
                 const updatedMessage = await Message.findById(messageid).populate("users body.author");
                 if(updatedMessage){broadcastMessage(updatedMessage)}
-                else{console.log("message didnt exist")}
+                else{console.log("message doesnt exist")}
             }
         })
 
@@ -137,11 +135,8 @@ function broadcastMessage(messageData){
             currentMessageId:messageid
         }
         connection.on("message", async(message) => {
-            console.log("woohoo new message")
             const messageReturn = await handleMessage(message,uuid)
-            if(messageReturn){ //how to make it so that it sends new data to front end on change?
-                // if submit button is clickedo n front end by any user, make it so all users get a new message returned?
-                console.log(`message return is good! sending it to front end`)
+            if(messageReturn){ 
                 connection.send(JSON.stringify({messageData:messageReturn}))
             }
         })

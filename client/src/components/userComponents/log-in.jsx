@@ -11,9 +11,22 @@ function LogIn(){
     const navigate = useNavigate();
     const {setCurrentUser} = useUser();
     const [showPassword,setShowPassword] = React.useState(false);
+    const [errors,setErrors] = React.useState({
+        username: false,
+        password:false,
+    })
 
     const faEyeSlash = "/icons/eye-crossed.svg";
     const faEye = "/icons/eye.svg";
+
+    React.useEffect(() => {
+        if(errors.username){
+            loginData.username.trim().length >= 3 && setErrors(prev => ({...prev,username:false}))
+        }
+        if(errors.password){
+            loginData.password.trim().length >= 5 && setErrors(prev => ({...prev,password:false}))
+        }
+    },[loginData])
 
     function handleChange(e){
         const {name,value} = e.target;
@@ -25,6 +38,17 @@ function LogIn(){
 
     function handleSubmit(e){
         e.preventDefault();
+    
+        if(loginData.username.trim().length < 3){
+            setErrors(prev => ({...prev, username:true}))
+            return
+        }
+        if(loginData.password.trim().length < 5){
+            setErrors(prev =>({...prev, password:true}))
+            return
+        }
+
+
         const fetchParams ={
             method:'POST',
             headers:{"Content-Type":"application/json"},
@@ -82,6 +106,7 @@ function LogIn(){
         value={loginData.username} placeholder="Enter your username"
         className="beautiful-shadow-1"
         onChange={handleChange} />
+        {errors.username && <span className="error-message">Your username needs to be atleast 3 characters</span>}
         </div>
         <div>
         <label htmlFor="password">Password</label>
@@ -94,6 +119,7 @@ function LogIn(){
         <span className={style.togglePassword} onClick={() => setShowPassword(!showPassword)}>
         <img alt="toggle password" src={showPassword ? faEyeSlash : faEye}/>
         </span>
+        {errors.password && <span className="error-message">Your password must be atleast 5 characters</span>}
         </div>
         </div>
         <div className={style.signInHolder}>

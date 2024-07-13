@@ -124,19 +124,38 @@
     0 5px 22px hsla(var(--black),0.09);
     gap: 2rem;
     padding: 2.5rem;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+}
+.messageParts::-webkit-scrollbar{
+    display:none
+}
+.authorPfp{
+    border-radius:50%;
+}
+
+.messageContent{
+    display:flex;
+    align-items:flex-start
 }
 
 .messagesMapped{
-    height: fit-content;
-    width:30rem;
     display:flex;
     flex-direction:column;
+    align-content:flex-start;
+    align-items:flex-start;
+    padding:0;margin:0;
 }
+.isCurrentUser{
+    align-items: flex-end;
+    align-text:flex-end;
+}
+.isCurrentUser .messageContent{align-items:flex-end}
 
 .messagesMapped *{
     padding: 0;
     margin:0;
-    height:fit-content; /*key line here is what makes the issue with message size*/
+    height:fit-content; /*key; line here is what makes the issue with message size*/
 }
 
 .messageAuthor{
@@ -147,5 +166,7 @@
 }
 
 .messageTime{
-
+    font-size:16px;
+    width:10rem;
+    color:hsl(var(--black-50))
 }

@@ -20,7 +20,6 @@ function MessageId(){
     const WS_URL = "ws://localhost:3000/api/message/current-updates"
     const {sendJsonMessage,lastJsonMessage,readyState} = useWebSocket(WS_URL,{
         queryParams:{username:currentUser?.username, messageid:messageData?._id},share:true,
-        onOpen:() => console.log("WebSocket connection opened"),
         shouldReconnect: (closeEvent) => true,
     });
 
@@ -37,14 +36,9 @@ function MessageId(){
         }
     },[lastJsonMessage]);
 
-    React.useEffect(() => {!loading && console.log(`messageData is `,messageData)},[messageData])
-
-    //useEffect that does the WS send everytime submit button is pressed? add a useState to it ? this
-
     if(loading){return <p>Loading...</p>}
 
-
-    function handleDeleteSubmit(e){ //not making api call?
+    function handleDeleteSubmit(e){
         e.preventDefault()
 
         fetch(`/api/message/find/${id}/delete`,{method:"DELETE", headers:{"Content-Type":"application/json"}})

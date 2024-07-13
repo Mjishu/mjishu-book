@@ -14,6 +14,7 @@ export default function UserMessages(props){
 
         return (
             <MessagePreview timestamp={formatDate} 
+            image={username[0]?.details?.pfp?.url}
             username={username[0].username}
             body={message.body.length > 0 ?message.body[message.body.length - 1].message : ""}
             handleClick={props.handleClick} key={message._id} id={message._id}

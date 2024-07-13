@@ -28,17 +28,20 @@ function MessageBody(props){
 
         //Check hour
         if(todaysDateSplit === storedDateSplit){
-            formatedTime = `${format(message.timestamp, "h aaa")} sent`
+            formatedTime = `${format(message.timestamp, "h aaa")}`
         }else{
             formatedTime = format(message.timestamp, "do MMMM")
         }
-            if (message.author.username === currentUser.username){
+        if (message.author.username === currentUser.username){
                 isCurrentUser = true;}
 
-        return (<div key={message._id} className={style.messagesMapped}>
-            <h6 className={style.messageAuthor}>{message.author.username}</h6>
+        return (<div key={message._id} className={`${style.messagesMapped} ${isCurrentUser ? style.isCurrentUser : ""}`}>
+            {!isCurrentUser && <img className={style.authorPfp} src={message?.author?.details?.pfp?.url}/>}
+            <div className={style.messageContent}>
             <p className={style.messageBody}>{message.message}</p>
             <p className={style.messageTime}>{formatedTime}</p>
+            </div>
+            {isCurrentUser && <img className={style.authorPfp} src={message?.author?.details?.pfp?.url}/>}
             </div>)
     })
 

@@ -13,6 +13,7 @@ function CreatePost(){
     const navigate = useNavigate()
     const fileInputRef = React.useRef(null)
     const {currentUser, isLoading} = useUser();
+    const [error,setError] = React.useState(false);
 
     React.useEffect(()=>{
         if(!isLoading){
@@ -23,6 +24,12 @@ function CreatePost(){
             }
         }
     },[currentUser,isLoading,navigate])
+    
+    React.useEffect(() => {
+        if(error){
+            postData.message.trim().length >= 1 && setError(false);
+        }
+    })
 
     function callApis(){
         fetch("/api/uploadForm")
@@ -56,6 +63,12 @@ function CreatePost(){
 
     async function handleSubmit(e){
         e.preventDefault();
+        
+        if(postData.message.trim().length < 1){
+            setError(true);
+            return
+        }
+
         const imageData = await uploadImage(postData.image)
         const fetchParams ={
             method:"POST",
@@ -79,6 +92,7 @@ function CreatePost(){
         <div className={style.formInputs}>
             <label htmlFor="message">Message</label>
             <textarea type="text" name="message" onChange={handleChange} value={postData.message} className={style.messageInput}/>
+        {error && <span className="error-message">Your message must not be empty</span>}
         <div className={style.buttons}>
             <div className={style.imageInputHolder} onClick={handleButtonClick}>
             <label htmlFor="image" className={style.imageLabel}><img src="/icons/upload.svg"/>Choose a file</label>
