@@ -44,7 +44,9 @@ function Signup(){
         }
         fetch("/api/user/sign-in",fetchParams)
             .then(res => res.json())
-            .then(data => data.message === "success" && navigate("/"))
+            .then(data => {if(data.message === "success"){
+                window.location.href = "/"
+            }})
             .catch(error => console.error(`error logging user in: ${error}`))
     }
 

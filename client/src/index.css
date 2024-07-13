@@ -61,3 +61,12 @@ button{
   transform: translate(-50%, -50%);
   z-index: 1000;
 }
+
+.editBoard button{
+    width:6rem;
+    background-color:hsl(var(--primary));
+    color:hsl(var(--off-white));
+    font-weight:600;
+    font-size:1.25rem;
+    border:2px solid hsl(var(--black-10))
+}

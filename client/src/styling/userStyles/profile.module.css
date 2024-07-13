@@ -179,3 +179,17 @@ button{
 .imageLabel img{
     width:1.5rem;
 }
+
+.deleteProfile{
+    position:absolute;
+    height:fit-content;
+    width:5rem;
+    bottom:.5rem;
+    right:.5rem;
+    border:none;
+    background-color: hsl(2,71%,62%) !important; 
+    color:hsl(var(--off-white));
+}
+.deleteProfile:hover{
+    box-shadow: 0px 0px 10px hsl(2,71%,62%,.8)
+}

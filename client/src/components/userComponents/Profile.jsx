@@ -167,7 +167,7 @@ function Profile(){ //check if editData is different from the previous data, may
         <button>Submit</button>
         </div>
         </form>
-        <button onClick={handleProfileDelete}>Delete</button>
+        <button onClick={handleProfileDelete} className={style.deleteProfile}>Delete</button>
         </div>
         </div>
     )

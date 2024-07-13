@@ -50,11 +50,11 @@ function MessageId(){
     }
 
     const deleteMessagePopup = (
-        <div>
-        <form onSubmit={handleDeleteSubmit}>
+        <div className="dialogBackdrop">
+        <form onSubmit={handleDeleteSubmit} className="editBoard">
             <p>Are you sure you want to delete?</p>
             <button onClick={() => setDeleteMessage(false)}>Cancel</button>
-            <button >Delete</button>
+            <button>Delete</button>
         </form>
         </div>
     )
@@ -62,7 +62,7 @@ function MessageId(){
     return(
         <div>
         <MessageBody body={messageData.body} id={messageData._id}/>
-            <button onClick={() => setDeleteMessage(true)}>Delete</button>
+            <button onClick={() => setDeleteMessage(true)} className={style.deleteButton}>Delete</button>
             {deleteMessage && deleteMessagePopup}
         </div>
     )

@@ -36,12 +36,10 @@ function MessageBody(props){
                 isCurrentUser = true;}
 
         return (<div key={message._id} className={`${style.messagesMapped} ${isCurrentUser ? style.isCurrentUser : ""}`}>
-            {!isCurrentUser && <img className={style.authorPfp} src={message?.author?.details?.pfp?.url}/>}
+            <h6 className={style.messageAuthor}>{message.author.username}</h6>
             <div className={style.messageContent}>
             <p className={style.messageBody}>{message.message}</p>
-            <p className={style.messageTime}>{formatedTime}</p>
             </div>
-            {isCurrentUser && <img className={style.authorPfp} src={message?.author?.details?.pfp?.url}/>}
             </div>)
     })
 
