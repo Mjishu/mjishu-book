@@ -30,7 +30,10 @@ const wsServer = new WebSocketServer({server, path:"/api/message/current-updates
 
 //Mongo Connection
 mongoose.set("strictQuery", "false");
-const mongoDB = process.env.MONGO_URI;
+let mongoDB = process.env.MONGO_URI;
+if(process.env.NODE_ENV === "production"){
+    mongoDB = process.env.MONGO_PROD
+}
 
 main().catch((err)=>console.log(err));
 async function main(){
@@ -56,7 +59,7 @@ app.use(passport.session());
 
 //Cors
 const allowedOrigins = [
-    process.env.frontend_link,
+    process.env.frontend_link,"http://localhost:5173"
 ]
 const corsOptions = {
     origin:allowedOrigins,
