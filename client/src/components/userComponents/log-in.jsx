@@ -71,7 +71,7 @@ function LogIn(){
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({
                 username:"Demo",
-                password:"Demo"
+                password:"Demo1"
             })
         }
         fetch("/api/user/sign-in", fetchParams)
