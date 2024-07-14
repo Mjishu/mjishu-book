@@ -85,7 +85,6 @@ const users = {};
 async function handleMessage(bytes,  uuid){ //should return postFOund
     try{
         const message = JSON.parse(bytes.toString());
-        console.log("recieved message: ",message)
 
         const user = users[uuid]
         const messageFound = await Message.findById(message.messageid).populate("users body.author")
@@ -171,7 +170,7 @@ passport.use(new LocalStrategy({
 passport.use(new GithubStrategy({
     clientID :process.env.GITHUB_CLIENT_ID,
     clientSecret:process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: `http://localhost:3000/api/user/github/callback`
+    callbackURL: `https://mjishu-book-api.onrender.com/api/user/github/callback`
 },
     function(accessToken,refreshToken,profile,done){
 
