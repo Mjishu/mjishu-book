@@ -31,8 +31,10 @@ const wsServer = new WebSocketServer({server, path:"/api/message/current-updates
 //Mongo Connection
 mongoose.set("strictQuery", "false");
 let mongoDB = process.env.MONGO_URI;
+let mongoUrl = process.env.MONGO_URI
 if(process.env.NODE_ENV === "production"){
     mongoDB = process.env.MONGO_PROD
+    mongoUrl = process.env.MONGO_PROD
 }
 
 main().catch((err)=>console.log(err));
@@ -52,7 +54,7 @@ app.use(session({
     secret: process.env.SECRET_KEY, 
     resave:false, 
     saveUninitialized:false, 
-    store: MongoStore.create({mongoUrl: process.env.MONGO_URI
+    store: MongoStore.create({mongoUrl: mongoUrl
     })}))
 app.use(passport.initialize());
 app.use(passport.session());
