@@ -5,12 +5,13 @@ import {useUser} from "../userComponents/UserContext.jsx"
 
 function Navbar(){
     const {currentUser, loading} = useUser();
+    const navigate = useNavigate();
 
     if(loading){return <p>Loading... </p>}
 
     return (
         <div className={style.navbar}>
-            <img src="" alt="logo" className={style.logo}/>
+            <img src="/Logo.png" alt="logo" className={style.logo} onClick={() => navigate("/")}/>
             <div className={style.pageLinks}>
             <Link className={style.navElement} to="/"><img alt="home" src="/icons/house-blank.svg"/></Link>
             <Link className={style.navElement} to="/messages"><img alt="messages" src="/icons/messages.svg"/></Link>

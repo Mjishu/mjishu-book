@@ -82,7 +82,7 @@
     transition:transfrom 0.3s ease;
 }
 .likesImage.pulse{
-    tansform:scale(1.2);
+    transform:scale(1.2);
 }
 
 .likeHolder{
