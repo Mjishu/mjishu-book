@@ -7,7 +7,7 @@ export default defineConfig({
     server:{
         proxy:{
             "/api":{
-                target: "http://localhost:3000",//change this to site where backend is hosted
+                target: "https://mjishu-book-api.onrender.com",//change this to site where backend is hosted
                 changeOrigin:true
             }
         }
