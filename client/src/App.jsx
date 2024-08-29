@@ -15,6 +15,8 @@ function App() {
     const navigate = useNavigate();
     const [showFollowing, setShowFollowing] = React.useState(false);
 
+    console.log("vercel.json added")
+
     React.useEffect(() => {
         if (!isLoading) { //user signed in on signup but since this is already at false,thinks usre not exist
             if (!currentUser || currentUser.message === "none") {

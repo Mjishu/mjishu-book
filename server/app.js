@@ -1,3 +1,4 @@
+//! ISSUE WITH GITHUB AUTH STRATEGY LINE 200 ISH?
 const createError = require('http-errors');
 const path = require('path');
 const http = require("http");
@@ -172,10 +173,10 @@ passport.use(new LocalStrategy({
     }
 }));
 
-passport.use(new GithubStrategy({
+passport.use(new GithubStrategy({ //! HERE 
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: `https://mjishu-book-api.onrender.com/api/user/github/callback`
+    callbackURL: `https://server-ancient-night-8092.fly.dev/api/user/github/callback`
 },
     function (accessToken, refreshToken, profile, done) {
 
