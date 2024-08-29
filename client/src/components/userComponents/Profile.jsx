@@ -1,48 +1,48 @@
 import React from "react";
 import style from "../../styling/userStyles/profile.module.css";
 import Navbar from "../generalComponents/Navbar";
-import {useUser} from "./UserContext.jsx"
-import {useNavigate} from "react-router-dom"
-import {format} from "date-fns"
+import { useUser } from "./UserContext.jsx"
+import { useNavigate } from "react-router-dom"
+import { format } from "date-fns"
 import Post from "../postComponents/Post.jsx"
 
-function Profile(){ //check if editData is different from the previous data, maybe make image in its own state holder
-    const {currentUser,isLoading, setCurrentUser} = useUser();
-    const [loading,setLoading] = React.useState(true);
-    const [profileUser,setProfileUser] = React.useState();
-    const [userPosts,setUserPosts] = React.useState();
-    const [status,setStatus] = React.useState({showEdit:false,})
-    const [editData,setEditData] = React.useState({
-        username:"",
-        email:"",
-        image:false,
+function Profile() { //check if editData is different from the previous data, maybe make image in its own state holder
+    const { currentUser, isLoading, setCurrentUser } = useUser();
+    const [loading, setLoading] = React.useState(true);
+    const [profileUser, setProfileUser] = React.useState();
+    const [userPosts, setUserPosts] = React.useState();
+    const [status, setStatus] = React.useState({ showEdit: false, })
+    const [editData, setEditData] = React.useState({
+        username: "",
+        email: "",
+        image: false,
         bio: "",
         location: "",
     });
-    const [followStatus,setFollowStatus] = React.useState({
+    const [followStatus, setFollowStatus] = React.useState({
         showFollowers: false,
         showFollowing: false
     })
     const [recommendedUsers, setRecommendedUsers] = React.useState({})
     const navigate = useNavigate();
-    const [cloud,setCloud] = React.useState()
+    const [cloud, setCloud] = React.useState()
     const usePfpRef = React.useRef(null)
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
-    React.useEffect(()=>{
-        if(!isLoading){
-            if(!currentUser || currentUser.message === "none"){
+    React.useEffect(() => {
+        if (!isLoading) {
+            if (!currentUser || currentUser.message === "none") {
                 navigate("/login")
-            }else{
+            } else {
                 callApis();
             }
         }
-    },[id,currentUser,isLoading,navigate])
+    }, [id, currentUser, isLoading, navigate])
 
-    function callApis(){
+    function callApis() {
         fetch(`/api/post/find/user/${id}`)
-            .then(res=>res.json())
-            .then(data=> setUserPosts(data))
+            .then(res => res.json())
+            .then(data => setUserPosts(data))
             .catch(err => console.error(`there was an error fetching user posts: ${err}`))
 
         fetch(`/api/user/find/${id}`)
@@ -58,41 +58,43 @@ function Profile(){ //check if editData is different from the previous data, may
             .then(data => setRecommendedUsers(data))
             .catch(error => console.error(`error fetching recommended user:${error}`))
 
-        fetch("/api/uploadform").then(res=>res.json()).then(data=>setCloud(data)).catch(err=>console.error(err))
+        fetch("/api/uploadform").then(res => res.json()).then(data => setCloud(data)).catch(err => console.error(err))
     };
 
-    React.useEffect(()=>{
-        const bio = profileUser?.details !==undefined? profileUser.details.bio : "";
-        const location = profileUser?.details!== undefined ? profileUser.details.location : "";
-        setEditData(prevData =>({...prevData, username:profileUser?.username, email:profileUser?.email,
-            bio:profileUser?.details?.bio, location:profileUser?.details?.location}))
-    },[profileUser])
+    React.useEffect(() => {
+        const bio = profileUser?.details !== undefined ? profileUser.details.bio : "";
+        const location = profileUser?.details !== undefined ? profileUser.details.location : "";
+        setEditData(prevData => ({
+            ...prevData, username: profileUser?.username, email: profileUser?.email,
+            bio: profileUser?.details?.bio, location: profileUser?.details?.location
+        }))
+    }, [profileUser])
 
-    function handlePostClick(id){
+    function handlePostClick(id) {
         navigate(`/post/${id}`)
     }
 
-    function handleRefClick(){
+    function handleRefClick() {
         usePfpRef.current.click();
     }
 
-    const postsMapped = userPosts?.map(post =>{
-        const formatedDate = format(post.createdAt ,"do MMMM")
+    const postsMapped = userPosts?.map(post => {
+        const formatedDate = format(post.createdAt, "do MMMM")
 
         return <Post currentUser={currentUser} key={post._id}
-        author={post.author.username} body={post.message}
-        time={formatedDate} id={post._id} handleClick={handlePostClick}
-        likes={post.likes}/>
+            author={post.author.username} body={post.message}
+            time={formatedDate} id={post._id} handleClick={handlePostClick}
+            likes={post.likes} />
     })
-    async function uploadImage(file){ 
-        try{
-            if(editData.image){
+    async function uploadImage(file) {
+        try {
+            if (editData.image) {
                 const data = new FormData();
-                data.append("file",file);
+                data.append("file", file);
                 data.append("upload_preset", "jfhbuazc");
-                data.append("folder","profile_pictures")
+                data.append("folder", "profile_pictures")
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud.cloud_name}/image/upload`,
-                    {method:"POST", body:data}
+                    { method: "POST", body: data }
                 );
                 const img = await res.json();
                 return {
@@ -100,136 +102,142 @@ function Profile(){ //check if editData is different from the previous data, may
                     public_id: img.public_id
                 }
             };
-        }catch(error){console.error(`there was an error sending image: ${error}`)}
+        } catch (error) { console.error(`there was an error sending image: ${error}`) }
     }
 
-    async function handleSubmit(e){ //check if data is different from incoming data
+    async function handleSubmit(e) { //check if data is different from incoming data
         e.preventDefault()
         const imageUpload = await uploadImage(editData.image)
-        const fetchParams = {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-            username:profileUser.username !== editData.username ? editData.username : profileUser.username,
-            email:profileUser.email !== editData.email ? editData.email :profileUser.email,
-            image:{
-                url:imageUpload?.secure_url, id:imageUpload?.public_id
-            },
-            bio:editData.bio,
-            location: editData.location
-        })}
+        const fetchParams = {
+            method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+                username: profileUser.username !== editData.username ? editData.username : profileUser.username,
+                email: profileUser.email !== editData.email ? editData.email : profileUser.email,
+                image: {
+                    url: imageUpload?.secure_url, id: imageUpload?.public_id
+                },
+                bio: editData.bio,
+                location: editData.location
+            })
+        }
 
-        fetch(`/api/user/find/${id}/update`,fetchParams) //this call isnt being properly made? but submit calls func
-            .then(res=>res.json())
-            .then(data=> data.message==="success" && location.reload())
-            .catch(err=>console.error(`error updating user: ${err}`))
-            .finally(()=> setStatus(prev=>({...prev,showEdit:false})))
+        fetch(`/api/user/find/${id}/update`, fetchParams) //this call isnt being properly made? but submit calls func
+            .then(res => res.json())
+            .then(data => data.message === "success" && location.reload())
+            .catch(err => console.error(`error updating user: ${err}`))
+            .finally(() => setStatus(prev => ({ ...prev, showEdit: false })))
     }
 
-    function handleChange(e){
-        const {name,value,type,files} = e.target;
-        setEditData(prev => ({...prev, [name]: type==="file" ? files[0] : value}))
+    function handleChange(e) {
+        const { name, value, type, files } = e.target;
+        setEditData(prev => ({ ...prev, [name]: type === "file" ? files[0] : value }))
     }
 
-    function handleProfileDelete(){
-        fetch(`/api/user/find/${profileUser._id}/delete`,{method:"DELETE"})
-            .then(res => res.json()).then(data => data.message==="success" && navigate("/login"))
+    function handleProfileDelete() {
+        fetch(`/api/user/find/${profileUser._id}/delete`, { method: "DELETE" })
+            .then(res => res.json()).then(data => data.message === "success" && navigate("/login"))
             .catch(err => console.error(err))
     }
 
     const editInformation = (
         <div className="dialogBackdrop">
-        <div className={`${style.editBack} editBoard`}>
-        <form className={style.editInfo} autoComplete="off" onSubmit={handleSubmit}>
-        <div>
-        <div>
-        <label htmlFor="username">Username</label>
-        <input type="text" name="username" value={editData?.username} onChange={handleChange}/>
-        </div>
-        <div>
-        <label htmlFor="email">Email</label>
-        <input type="email" name="email" value={editData?.email} onChange={handleChange}/>
-        </div>
-        </div>
-        <div>
-        <div>
-        <label htmlFor="bio">Bio</label>
-        <input type="text" onChange={handleChange} value={editData?.bio} name="bio" placeholder="tell us about yourself"/>
-        </div>
-        <div>
-        <label htmlFor="location">Location</label>
-        <input type="text" onChange={handleChange} value={editData?.location} name="location" placeholder="New York,NY"/>
-        </div>
-        </div>
-        <div className={style.imageInputHolder} onClick={handleRefClick}>
-        <label htmlFor="image" className={style.imageLabel}><img src="/icons/upload.svg"/>Choose a file</label>
-        <input ref={usePfpRef} type="file" name="image" multiple={false} onChange={handleChange} className={style.imageInput}/>
-        </div>
-        <div>
-        <button onClick={()=>setStatus(prev=>({...prev,showEdit:false}))}>Cancel</button>
-        <button>Submit</button>
-        </div>
-        </form>
-        <button onClick={handleProfileDelete} className={style.deleteProfile}>Delete</button>
-        </div>
+            <div className={`${style.editBack} editBoard`}>
+                <form className={style.editInfo} autoComplete="off" onSubmit={handleSubmit}>
+                    <div>
+                        <div>
+                            <label htmlFor="username">Username</label>
+                            <input type="text" name="username" value={editData?.username} onChange={handleChange} />
+                        </div>
+                        <div>
+                            <label htmlFor="email">Email</label>
+                            <input type="email" name="email" value={editData?.email} onChange={handleChange} />
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label htmlFor="bio">Bio</label>
+                            <input type="text" onChange={handleChange} value={editData?.bio} name="bio" placeholder="tell us about yourself" />
+                        </div>
+                        <div>
+                            <label htmlFor="location">Location</label>
+                            <input type="text" onChange={handleChange} value={editData?.location} name="location" placeholder="New York,NY" />
+                        </div>
+                    </div>
+                    <div className={style.imageInputHolder} onClick={handleRefClick}>
+                        <label htmlFor="image" className={style.imageLabel}><img src="/icons/upload.svg" />Choose a file</label>
+                        <input ref={usePfpRef} type="file" name="image" multiple={false} onChange={handleChange} className={style.imageInput} />
+                    </div>
+                    <div>
+                        <button onClick={() => setStatus(prev => ({ ...prev, showEdit: false }))}>Cancel</button>
+                        <button>Submit</button>
+                    </div>
+                </form>
+                <button onClick={handleProfileDelete} className={style.deleteProfile}>Delete</button>
+            </div>
         </div>
     )
 
-    function openUser(id){
+    function openUser(id) {
         navigate(`/profile/${id}`)
-        setFollowStatus(prev => ({...prev,showFollowing:false,showFollowers:false}))
+        setFollowStatus(prev => ({ ...prev, showFollowing: false, showFollowers: false }))
     }
 
-    function unfollowUser(id){
-        fetch(`/api/user/find/${id}/unfollow`,{method:"POST",headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({id:profileUser._id})})
+    function unfollowUser(id) {
+        fetch(`/api/user/find/${id}/unfollow`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: profileUser._id })
+        })
             .then(res => res.json())
             .then(data => console.log(data))
             .catch(error => console.error(`there was an error trying to unfollow user: ${error}`))
     }
-    function followUser(id){
-        fetch(`/api/user/find/${id}/follow`, {method:"POST", headers:{'Content-Type':"application/json"},
-            body:JSON.stringify({id:profileUser._id})})
+    function followUser(id) {
+        fetch(`/api/user/find/${id}/follow`, {
+            method: "POST", headers: { 'Content-Type': "application/json" },
+            body: JSON.stringify({ id: profileUser._id })
+        })
             .then(res => res.json()).then(data => console.log(data))
             .catch(error => console.error(`error trying to follow user`))
     }
 
-    function ShowsFollowing(){
+    function ShowsFollowing() {
         const followingMapped = profileUser.following.map(user => {
             return (
                 <div key={user._id} onClick={() => openUser(user._id)}>
-                <h6>{user.username}</h6>
-                {currentUser._id === profileUser._id && <button onClick={() => unfollowUser(user._id)}>unfollow</button>}
+                    <h6>{user.username}</h6>
+                    {currentUser._id === profileUser._id && <button onClick={() => unfollowUser(user._id)}>unfollow</button>}
                 </div>
             )
         })
         return (
             <div className="dialogBackdrop">
-            <div className={`${style.followInformation} editBoard`}>
-            {followingMapped}
-            <button onClick={()=> setFollowStatus(prev=>({...prev,showFollowing:false}))}>Close</button>
-            </div>
+                <div className={`${style.followInformation} editBoard`}>
+                    {followingMapped}
+                    <button onClick={() => setFollowStatus(prev => ({ ...prev, showFollowing: false }))}>Close</button>
+                </div>
             </div>
         )
     }
 
-    function ShowsFollowers(){
-        const followersMapped = profileUser.followers.map(user =>{
+    function ShowsFollowers() {
+        const followersMapped = profileUser.followers.map(user => {
             return (
                 <div key={user._id} onClick={() => openUser(user._id)} >
-                <h6>{user.username}</h6>
+                    <h6>{user.username}</h6>
                 </div>
             )
         });
         return (
             <div className="dialogBackdrop">
-            <div className={`${style.followInformation} editBoard`}>
-            {followersMapped}
-            <button onClick={() => setFollowStatus(prev=>({...prev,showFollowers:false}))}>Close</button>
-            </div>
+                <div className={`${style.followInformation} editBoard`}>
+                    {followersMapped}
+                    <button onClick={() => setFollowStatus(prev => ({ ...prev, showFollowers: false }))}>Close</button>
+                </div>
             </div>
         )
     }
-    function handleLogout(){
+    function handleLogout() {
         fetch("/api/user/logout")
-            .then(res =>res.json()) 
+            .then(res => res.json())
             .then(data => {
                 setCurrentUser(null);
                 data.message === "success" && navigate("/login");
@@ -237,61 +245,61 @@ function Profile(){ //check if editData is different from the previous data, may
             .catch(err => console.error(`error logging out ${err}`))
     }
 
-    if(loading || isLoading){return <h1>Loading...</h1>}
+    if (loading || isLoading) { return <h1>Loading...</h1> }
 
-    const recommendedMapped = recommendedUsers?.length > 0 && recommendedUsers.filter(user => 
-        !currentUser?.following.includes(user._id)).slice(0,3).map(user=>{
-            return(
+    const recommendedMapped = recommendedUsers?.length > 0 && recommendedUsers.filter(user =>
+        !currentUser?.following.includes(user._id)).slice(0, 3).map(user => {
+            return (
                 <div key={user._id} className={style.userMapped}>
-                <div className={style.userMappedInfo}>
-                <div className={style.userMappedPFP}>{user?.details?.pfp?.url && <img src={user.details.pfp.url}/>}</div>
-                <h5 onClick={() => navigate(`/profile/${user._id}`)}>{user.username}</h5>
-                </div>
-                <button onClick={() => followUser(user._id)}>Follow</button>
+                    <div className={style.userMappedInfo}>
+                        <div className={style.userMappedPFP}>{user?.details?.pfp?.url && <img src={user.details.pfp.url} />}</div>
+                        <h5 onClick={() => navigate(`/profile/${user._id}`)}>{user.username}</h5>
+                    </div>
+                    <button onClick={() => followUser(user._id)}>Follow</button>
                 </div>
             )
         })
 
-    return(
+    return (
         <div className="content">
-        <Navbar/>
-        <div className={style.bodyHolder}>
-        <div className={style.bodyInfo}>
-        <header className={style.header}>
-        <div className={`${profileUser?.details?.pfp?.url ? "" :style.profilePicture} ${style.profile_pic_holder}`}>
-        {profileUser?.details?.pfp?.url && 
-            <img className={style.profile_pic_holder} src={profileUser.details.pfp.url} alt="PFP"/>
-        }</div>
-        <div className={style.userText}>
-        <h1 className={style.username}>{profileUser?.username}</h1>
-        <div className={style.followHolder}>
-        <h5 onClick={() => setFollowStatus(prev =>({...prev, showFollowers:true}))}>{profileUser?.followers?.length ?? 0}Followers</h5>
-        <h5 onClick={() => setFollowStatus(prev => ({...prev,showFollowing:true}))}>{profileUser?.following?.length ?? 0}Following</h5>
-        </div>
-        <div className={style.detailsHolder}>
-        <p>{profileUser?.details?.location ? profileUser.details.location : "Unknown" }</p>
-        <p>{profileUser?.details?.bio ? profileUser.details.bio : "No Bio"}</p>
-        </div>
-        </div>
-        </header>
-        <div className={style.postHolder}>
-        {userPosts ? postsMapped : <p>User has no posts</p>}
-        </div>
-        <div className={style.recommendedHolder}>
-        <h3>Recommended</h3>
-        <div className={style.recommendedMapHolder}>
-        {recommendedMapped}
-        </div>
-        </div>
-        {currentUser?._id === profileUser?._id &&<button className={style.editButton}
-            onClick={() => setStatus(prevStat=>({...prevStat,showEdit:true}))}>Edit Profile
-            </button>}
-        {status.showEdit && editInformation}
-        {followStatus.showFollowing && ShowsFollowing()}
-        {followStatus.showFollowers && ShowsFollowers()}
-        <button onClick={handleLogout} className={style.logoutButton}>Logout</button>
-        </div>
-        </div>
+            <Navbar />
+            <div className={style.bodyHolder}>
+                <div className={style.bodyInfo}>
+                    <header className={style.header}>
+                        <div className={`${profileUser?.details?.pfp?.url ? "" : style.profilePicture} ${style.profile_pic_holder}`}>
+                            {profileUser?.details?.pfp?.url &&
+                                <img className={style.profile_pic_holder} src={profileUser.details.pfp.url} alt="PFP" />
+                            }</div>
+                        <div className={style.userText}>
+                            <h1 className={style.username}>{profileUser?.username}</h1>
+                            <div className={style.followHolder}>
+                                <h5 onClick={() => setFollowStatus(prev => ({ ...prev, showFollowers: true }))}>{profileUser?.followers?.length ?? 0}Followers</h5>
+                                <h5 onClick={() => setFollowStatus(prev => ({ ...prev, showFollowing: true }))}>{profileUser?.following?.length ?? 0}Following</h5>
+                            </div>
+                            <div className={style.detailsHolder}>
+                                <p>{profileUser?.details?.location ? profileUser.details.location : "Unknown"}</p>
+                                <p>{profileUser?.details?.bio ? profileUser.details.bio : "No Bio"}</p>
+                            </div>
+                        </div>
+                    </header>
+                    <div className={style.postHolder}>
+                        {userPosts ? postsMapped : <p>User has no posts</p>}
+                    </div>
+                    <div className={style.recommendedHolder}>
+                        <h3>Recommended</h3>
+                        <div className={style.recommendedMapHolder}>
+                            {recommendedMapped}
+                        </div>
+                    </div>
+                    {currentUser?._id === profileUser?._id && <button className={style.editButton}
+                        onClick={() => currentUser.username != "Demo" ? setStatus(prevStat => ({ ...prevStat, showEdit: true })) : alert("Demo user cannot edit Profile")}>Edit Profile
+                    </button>}
+                    {status.showEdit && editInformation}
+                    {followStatus.showFollowing && ShowsFollowing()}
+                    {followStatus.showFollowers && ShowsFollowers()}
+                    <button onClick={handleLogout} className={style.logoutButton}>Logout</button>
+                </div>
+            </div>
         </div>
     )
 }
