@@ -40,6 +40,7 @@ if (process.env.NODE_ENV === "production") {
 main().catch((err) => console.log(err));
 async function main() {
     await mongoose.connect(mongoDB);
+    console.log("mongoose is connected")
 }
 
 //cloudinary connection
