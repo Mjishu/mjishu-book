@@ -1,8 +1,8 @@
 {
-    "rewrites": [
+    "routes": [
         {
-            "source": "/api/:path",
-            "destination": "https://server-ancient-night-8092.fly.dev/api/:path"
+            "src": "/api/(.*)",
+            "dest": "https://server-ancient-night-8092.fly.dev/api/$1"
         }
     ]
 }
