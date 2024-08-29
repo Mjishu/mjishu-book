@@ -17,7 +17,7 @@ function MessageId() {
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
 
-    const WS_URL = "ws://mjishu-book-api.onrender.com/api/message/current-updates"
+    const WS_URL = "wss://mjishu-book-api.onrender.com/api/message/current-updates"
     //const WS_URL = "ws://localhost:3000/api/message/current-updates"
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
