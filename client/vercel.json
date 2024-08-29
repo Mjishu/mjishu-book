@@ -3,6 +3,11 @@
         {
             "src": "/api/(.*)",
             "dest": "https://server-ancient-night-8092.fly.dev/api/$1"
+        },
+        {
+            "src": "/[^.]+",
+            "dest": "./index.html",
+            "status": 200
         }
     ]
 }
