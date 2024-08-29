@@ -61,6 +61,8 @@ function LogIn() {
                 if (data.message === "success") {
                     setCurrentUser(data.user)
                     navigate("/")
+                } else {
+                    alert(data.message)
                 }
             })
             .catch(error => console.error(`error making sigin in call ${error}`))
