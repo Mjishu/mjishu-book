@@ -173,7 +173,7 @@ passport.use(new LocalStrategy({
     }
 }));
 
-passport.use(new GithubStrategy({ //! HERE 
+passport.use(new GithubStrategy({ //! HERE, so it creates the user but it doesnt log you in when you press it?
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
     callbackURL: `https://server-ancient-night-8092.fly.dev/api/user/github/callback`

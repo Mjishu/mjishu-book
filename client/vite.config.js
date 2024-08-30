@@ -7,7 +7,7 @@ export default defineConfig({
     server: {
         proxy: {
             "/api": {
-                target: "http://localhost:3000",//change this to site where backend is hosted
+                target: "https://server-ancient-night-8092.fly.dev",//change this to site where backend is hosted
                 changeOrigin: true
             }
         }
