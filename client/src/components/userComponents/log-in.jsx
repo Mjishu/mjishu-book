@@ -90,7 +90,9 @@ function LogIn() {
     }
 
     function handleGithub() {
-        window.location.href = "https://server-ancient-night-8092.fly.dev/api/user/github";
+        const githubUrl = "https://server-ancient-night-8092.fly.dev/api/user/github";
+        console.log("going to handleGithub!", githubUrl);
+        //window.location.href = githubUrl;
     }
 
     return (
