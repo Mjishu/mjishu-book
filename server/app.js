@@ -178,9 +178,24 @@ passport.use(new GithubStrategy({ //! HERE, so it creates the user but it doesnt
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
     callbackURL: `https://server-ancient-night-8092.fly.dev/api/user/github/callback`
 },
-    function (accessToken, refreshToken, profile, done) {
-
-        done(null, profile)
+    async function (accessToken, refreshToken, profile, done) {
+        try {
+            let user = await User.findOne({ 'ids.githubId': profile.id });
+            if (!user) {
+                user = new User({
+                    username: username,
+                    email: emails && emails[0] ? emails[0].value : null,
+                    ids: { githubId: id },
+                    details: {
+                        pfp: { url: photos && photos[0] ? photos[0].value : null }
+                    }
+                });
+                await user.save()
+            }
+            done(null, user)
+        } catch (err) {
+            done(err)
+        }
     }
 ))
 

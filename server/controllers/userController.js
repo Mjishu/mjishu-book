@@ -104,6 +104,8 @@ exports.user_current = async (req, res) => { //if i need to populate, find User 
     } catch (error) { res.status(500).json({ message: `error fetching current user ${error}` }) }
 };
 
+exports.githubAuthCallback = passport.authenticate("github", { failureRedirect: `${process.env.frontend_link}/login` })
+
 exports.githubCallback = async (req, res, next) => {
     console.log("-----------------------------calling github callback ")
     try {
@@ -125,7 +127,10 @@ exports.githubCallback = async (req, res, next) => {
         console.log("---------------------------USER ALREADY EXISTS/NOW EXISTS")
 
         req.login(user, (err) => {
-            if (err) return next(err);
+            if (err) {
+                console.error(`login error: ${err}`)
+                return next(err)
+            };
             console.log("-------------------NO ERROR LOGGING IN, RES REDIRECTING NOW TO FRONTED_LINK:", process.env.frontend_link)
             return res.redirect(`${process.env.frontend_link}`)
         });
@@ -136,8 +141,6 @@ exports.githubCallback = async (req, res, next) => {
 }
 
 exports.githubAuth = passport.authenticate("github");
-
-exports.githubAuthCallback = passport.authenticate("github", { failureRedirect: `${process.env.frontend_link}/login` })
 
 exports.user_sign_in = async (req, res, next) => {
     try {
