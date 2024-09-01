@@ -90,12 +90,7 @@ function LogIn() {
     }
 
     function handleGithub() {
-        console.log("calling handle git")
-        if (process.env.NODE_ENV == "production") {
-            window.location.href = "https://mjishu-book-api.onrender.com/api/user/github";
-        } else {
-            window.location.href = "http://localhost:3000/api/user/github"
-        }
+        window.location.href = "https://server-ancient-night-8092.fly.dev/api/user/github";
     }
 
     return (

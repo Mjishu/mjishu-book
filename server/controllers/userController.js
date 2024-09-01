@@ -105,11 +105,13 @@ exports.user_current = async (req, res) => { //if i need to populate, find User 
 };
 
 exports.githubCallback = async (req, res, next) => {
+    console.log("-----------------------------calling github callback ")
     try {
         const { id, username, emails, photos } = req.user;
         let user = await User.findOne({ 'ids.githubId': id })
 
         if (!user) {
+            console.log("--------------------- CREATING NEW USER")
             user = new User({
                 username: username,
                 email: emails && emails[0] ? emails[0].value : null,
@@ -120,9 +122,11 @@ exports.githubCallback = async (req, res, next) => {
             })
             await user.save();
         }
+        console.log("---------------------------USER ALREADY EXISTS/NOW EXISTS")
 
         req.login(user, (err) => {
             if (err) return next(err);
+            console.log("-------------------NO ERROR LOGGING IN, RES REDIRECTING NOW TO FRONTED_LINK:", process.env.frontend_link)
             return res.redirect(`${process.env.frontend_link}`)
         });
     } catch (err) {
