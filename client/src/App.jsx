@@ -44,8 +44,6 @@ function App() {
             .catch(error => console.error(`there was an error trying to fetch all users: ${error}`))
     }
 
-
-
     function handlePostClick(id) {
         navigate(`/post/${id}`)
     }
@@ -119,6 +117,8 @@ function App() {
     if (postsLoading || isLoading) {
         return <p>Loading...</p>
     }
+
+
 
     return (
         <div className="content">

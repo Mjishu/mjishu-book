@@ -58,14 +58,19 @@ app.use(session({
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: mongoUrl
-    })
+    }),
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax"
+    }
 }))
 app.use(passport.initialize());
 app.use(passport.session());
 
 //Cors
 const allowedOrigins = [
-    process.env.frontend_link, "http://localhost:5173"
+    process.env.frontend_link, "http://localhost:5173", "https://mjishu-book.vercel.app"
 ]
 const corsOptions = {
     origin: allowedOrigins,

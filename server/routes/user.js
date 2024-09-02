@@ -27,7 +27,10 @@ router.post("/find/:id/follow", userController.user_following);
 router.post("/find/:id/unfollow", userController.user_unfollowing)
 
 //github
-router.get("/github", userController.githubAuth);
+router.get("/github", (req, res, next) => {
+    console.log("Recieved Request to /api/user/github");
+    next()
+}, userController.githubAuth);
 
 router.get("/github/callback",
     userController.githubAuthCallback,

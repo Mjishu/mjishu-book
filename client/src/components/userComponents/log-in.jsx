@@ -92,7 +92,7 @@ function LogIn() {
     function handleGithub() {
         const githubUrl = "https://server-ancient-night-8092.fly.dev/api/user/github";
         console.log("going to handleGithub!", githubUrl);
-        //window.location.href = githubUrl;
+        window.location.href = githubUrl;
     }
 
     return (
@@ -131,7 +131,7 @@ function LogIn() {
                     <div className={style.signInHolder}>
                         <button className={`${style.signInButton} beautiful-shadow-1`}>Log In</button>
                         <button onClick={handleDummyAccount} className={`${style.signInButton} beautiful-shadow-1`}>Log in as demo user</button>
-                        <button onClick={handleGithub} className={`${style.alternateSignIn} beautiful-shadow-1`}>Sign in with github</button>
+                        {/*<button onClick={handleGithub} className={`${style.alternateSignIn} beautiful-shadow-1`}>Sign in with github</button>*/}
                     </div>
                 </form>
             </div>
