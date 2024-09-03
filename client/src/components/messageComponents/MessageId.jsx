@@ -24,7 +24,6 @@ function MessageId() {
         WS_URL = import.meta.env.VITE_DEV_BACKEND_WS + "/api/message/current-updates"
     }
 
-
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
         queryParams: { username: currentUser?.username, messageid: messageData?._id }, share: true,
         shouldReconnect: (closeEvent) => true,
