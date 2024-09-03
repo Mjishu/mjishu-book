@@ -102,7 +102,7 @@ exports.user_delete = async (req, res) => {
 
 exports.user_current = async (req, res) => { //if i need to populate, find User by req.user._id
     try {
-        if (!req.user) {
+        if (!req.user) { //! Not persistent? whenever I refresh page it gives none
             return res.status(401).json({ message: "none" })
         }
         res.json(req.user);

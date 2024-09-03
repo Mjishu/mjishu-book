@@ -17,8 +17,13 @@ function MessageId() {
 
     const id = window.location.href.split("/")[window.location.href.split("/").length - 1]
 
-    const WS_URL = "wss://server-ancient-night-8092.fly.dev/api/message/current-updates"
-    //const WS_URL = "ws://localhost:3000/api/message/current-updates"
+    let WS_URL
+    if (import.meta.env.VITE_NODE_ENV == "production") {
+        WS_URL = import.meta.env.VITE_PROD_BACKEND_WS + "/api/message/current-updates"
+    } else {
+        WS_URL = import.meta.env.VITE_DEV_BACKEND_WS + "/api/message/current-updates"
+    }
+
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
         queryParams: { username: currentUser?.username, messageid: messageData?._id }, share: true,

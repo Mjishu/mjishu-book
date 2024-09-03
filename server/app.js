@@ -62,11 +62,12 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax"
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     }
 }))
 app.use(passport.initialize());
 app.use(passport.session());
+console.log("cookie changed")
 
 //Cors
 const allowedOrigins = [
@@ -178,10 +179,18 @@ passport.use(new LocalStrategy({
     }
 }));
 
+let callbackUrl
+
+if (process.env.NODE_ENV == "production") {
+    callbackUrl = process.env.PROD_BACKEND + "/api/user/github/callback"
+} else {
+    callbackUrl = process.env.DEV_BACKEND + "/api/user/github/callback"
+}
+
 passport.use(new GithubStrategy({ //! HERE, so it creates the user but it doesnt log you in when you press it?
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: `https://server-ancient-night-8092.fly.dev/api/user/github/callback`
+    callbackURL: callbackUrl
 },
     async function (accessToken, refreshToken, profile, done) {
         try {

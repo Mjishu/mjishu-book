@@ -89,8 +89,14 @@ function LogIn() {
             .catch(error => console.error(`error trying to use demo account! ${error}`))
     }
 
+    let githubUrl
+    if (import.meta.env.VITE_NODE_ENV == "production") {
+        githubUrl = import.meta.env.VITE_PROD_BACKEND + "/api/user/github"
+    } else {
+        githubUrl = import.meta.env.VITE_DEV_BACKEND + "/api/user/github"
+    }
+
     function handleGithub() {
-        const githubUrl = "https://server-ancient-night-8092.fly.dev/api/user/github";
         console.log("going to handleGithub!", githubUrl);
         window.location.href = githubUrl;
     }

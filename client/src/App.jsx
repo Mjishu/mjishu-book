@@ -21,11 +21,14 @@ function App() {
                 console.log("we have to redirect to auth:(")
                 navigate("/login")
             } else {
+                console.log(currentUser)
                 fetchPosts();
                 fetchAllUsers();
             }
         }
     }, [currentUser, isLoading, navigate])
+
+
 
     function fetchPosts() {
         setPostsLoading(true);
