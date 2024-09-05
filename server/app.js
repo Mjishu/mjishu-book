@@ -31,11 +31,13 @@ const wsServer = new WebSocketServer({ server, path: "/api/message/current-updat
 
 //Mongo Connection
 mongoose.set("strictQuery", "false");
-let mongoDB = process.env.MONGO_URI;
-let mongoUrl = process.env.MONGO_URI
-if (process.env.NODE_ENV === "production") {
+let mongoDB, mongoUrl
+if (process.env.NODE_ENV == "production") {
     mongoDB = process.env.MONGO_PROD
     mongoUrl = process.env.MONGO_PROD
+} else {
+    mongoDB = process.env.MONGO_URI;
+    mongoUrl = process.env.MONGO_URI;
 }
 
 main().catch((err) => console.log(err));
