@@ -47,7 +47,7 @@ function MessageId() {
     function handleDeleteSubmit(e) {
         e.preventDefault()
 
-        fetch(`/api/message/find/${id}/delete`, { method: "DELETE", headers: { "Content-Type": "application/json" } })
+        fetch(`/api/message/find/${id}/delete`, { method: "DELETE", headers: { "Content-Type": "application/json" }, credentials: "include" })
             .then(res => res.json())
             .then(data => data.message === "success" ? navigate("/messages") : console.log(data))
             .catch(error => console.error(`there was an error trying to delete message: $(error)`))

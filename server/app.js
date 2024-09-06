@@ -54,6 +54,10 @@ cloudinary.config({
     secure: true //this might make it not work bc rn its http
 })
 
+if (!process.env.SECRET_KEY) {
+    console.log("------------------------------------------ secret_key could not be found")
+}
+
 app.use(session({
     secret: process.env.SECRET_KEY,
     resave: false,
@@ -64,7 +68,7 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV == "production" ? true : false, //! its this issue it works fine when this is set to false??
-        sameSite: process.env.NODE_ENV == "production" ? "none" : "lax"
+        sameSite: "none"
     }
 }))
 app.use(passport.initialize());

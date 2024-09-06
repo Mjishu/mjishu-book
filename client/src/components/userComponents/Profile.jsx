@@ -40,12 +40,12 @@ function Profile() { //check if editData is different from the previous data, ma
     }, [id, currentUser, isLoading, navigate])
 
     function callApis() {
-        fetch(`/api/post/find/user/${id}`)
+        fetch(`/api/post/find/user/${id}`, { credentials: "include" })
             .then(res => res.json())
             .then(data => setUserPosts(data))
             .catch(err => console.error(`there was an error fetching user posts: ${err}`))
 
-        fetch(`/api/user/find/${id}`)
+        fetch(`/api/user/find/${id}`, { credentials: "include" })
             .then(res => res.json())
             .then(data => {
                 setProfileUser(data)
@@ -53,12 +53,12 @@ function Profile() { //check if editData is different from the previous data, ma
             })
             .catch(error => console.error(`error fetching post user: ${error}`))
 
-        fetch('/api/user/find')
+        fetch('/api/user/find', { credentials: "include" })
             .then(res => res.json())
             .then(data => setRecommendedUsers(data))
             .catch(error => console.error(`error fetching recommended user:${error}`))
 
-        fetch("/api/uploadform").then(res => res.json()).then(data => setCloud(data)).catch(err => console.error(err))
+        fetch("/api/uploadform", { credentials: "include" }).then(res => res.json()).then(data => setCloud(data)).catch(err => console.error(err))
     };
 
     React.useEffect(() => {
@@ -94,7 +94,7 @@ function Profile() { //check if editData is different from the previous data, ma
                 data.append("upload_preset", "jfhbuazc");
                 data.append("folder", "profile_pictures")
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud.cloud_name}/image/upload`,
-                    { method: "POST", body: data }
+                    { method: "POST", body: data, credentials: "include" }
                 );
                 const img = await res.json();
                 return {
@@ -117,7 +117,8 @@ function Profile() { //check if editData is different from the previous data, ma
                 },
                 bio: editData.bio,
                 location: editData.location
-            })
+            }),
+            credentials: "include"
         }
 
         fetch(`/api/user/find/${id}/update`, fetchParams) //this call isnt being properly made? but submit calls func
@@ -133,7 +134,7 @@ function Profile() { //check if editData is different from the previous data, ma
     }
 
     function handleProfileDelete() {
-        fetch(`/api/user/find/${profileUser._id}/delete`, { method: "DELETE" })
+        fetch(`/api/user/find/${profileUser._id}/delete`, { method: "DELETE", credentials: "include" })
             .then(res => res.json()).then(data => data.message === "success" && navigate("/login"))
             .catch(err => console.error(err))
     }
@@ -184,7 +185,8 @@ function Profile() { //check if editData is different from the previous data, ma
     function unfollowUser(id) {
         fetch(`/api/user/find/${id}/unfollow`, {
             method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: profileUser._id })
+            body: JSON.stringify({ id: profileUser._id }),
+            credentials: "include"
         })
             .then(res => res.json())
             .then(data => console.log(data))
@@ -193,7 +195,8 @@ function Profile() { //check if editData is different from the previous data, ma
     function followUser(id) {
         fetch(`/api/user/find/${id}/follow`, {
             method: "POST", headers: { 'Content-Type': "application/json" },
-            body: JSON.stringify({ id: profileUser._id })
+            body: JSON.stringify({ id: profileUser._id }),
+            credentials: "include"
         })
             .then(res => res.json()).then(data => console.log(data))
             .catch(error => console.error(`error trying to follow user`))
@@ -236,7 +239,7 @@ function Profile() { //check if editData is different from the previous data, ma
         )
     }
     function handleLogout() {
-        fetch("/api/user/logout")
+        fetch("/api/user/logout", { credentials: "include" })
             .then(res => res.json())
             .then(data => {
                 setCurrentUser(null);

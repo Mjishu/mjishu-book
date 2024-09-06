@@ -33,7 +33,7 @@ function App() {
     function fetchPosts() {
         setPostsLoading(true);
 
-        fetch("/api/post/all")
+        fetch("/api/post/all", { credentials: "include" })
             .then(res => res.json())
             .then(data => setAllPosts(data))
             .catch(error => console.error(`error fetching posts ${error}`))
@@ -41,7 +41,7 @@ function App() {
     };
 
     function fetchAllUsers() {
-        fetch("/api/user/find")
+        fetch("/api/user/find", { credentials: "include" })
             .then(res => res.json())
             .then(data => setAllUsers(data))
             .catch(error => console.error(`there was an error trying to fetch all users: ${error}`))
@@ -60,7 +60,8 @@ function App() {
         fetch(`/api/user/find/${id}/follow`,
             {
                 method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: currentUser._id })
+                body: JSON.stringify({ id: currentUser._id }),
+                credentials: "include"
             })
             .then(res => res.json())
             .then(data => console.log(data))
@@ -72,7 +73,8 @@ function App() {
         fetch(`/api/user/find/${id}/unfollow`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: currentUser._id })
+            body: JSON.stringify({ id: currentUser._id }),
+            credentials: "include"
         })
             .then(res => res.json())
             .then(data => console.log(data))

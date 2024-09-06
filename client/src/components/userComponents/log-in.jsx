@@ -52,7 +52,8 @@ function LogIn() {
         const fetchParams = {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(loginData)
+            body: JSON.stringify(loginData),
+            credentials: "include"
         };
 
         fetch("/api/user/sign-in", fetchParams)
@@ -75,7 +76,8 @@ function LogIn() {
             body: JSON.stringify({
                 username: "Demo",
                 password: "Demo1"
-            })
+            }),
+            credentials: "include"
         }
         console.log(fetchParams)
         fetch("/api/user/sign-in", fetchParams)

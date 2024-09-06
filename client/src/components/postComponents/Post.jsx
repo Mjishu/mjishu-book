@@ -12,7 +12,8 @@ function Post(props) { //add likes to here
         !isLoading ? fetch(`/api/post/find/${props.id}/like`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: id })
+            body: JSON.stringify({ id: id }),
+            credentials: "include"
         })
             .then(res => res.json())
             .then(data => data.message === "success" ? setLiked(true) : console.log(data))
@@ -24,7 +25,8 @@ function Post(props) { //add likes to here
         !isLoading ? fetch(`/api/post/find/${props.id}/unlike`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: id })
+            body: JSON.stringify({ id: id }),
+            credentials: "include"
         })
             .then(res => res.json())
             .then(data => data.message === "success" ? setLiked(false) : console.log(data))
