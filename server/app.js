@@ -67,10 +67,11 @@ app.use(session({
     }),
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV == "production" ? true : false, //! its this issue it works fine when this is set to false??
+        secure: false,//process.env.NODE_ENV == "production" ? true : false, //! its this issue it works fine when this is set to false??
         sameSite: "none"
     }
 }))
+
 app.use(passport.initialize());
 app.use(passport.session());
 
