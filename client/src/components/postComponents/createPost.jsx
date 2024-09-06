@@ -51,7 +51,7 @@ function CreatePost() {
         data.append("upload_preset", "jfhbuazc");
         data.append("folder", "post_images")
         const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud.cloud_name}/image/upload`,
-            { method: "POST", body: data, credentials: "include" }
+            { method: "POST", body: data }
         );
         const img = await res.json();
         return {

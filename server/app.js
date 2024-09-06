@@ -80,9 +80,9 @@ const allowedOrigins = [
     process.env.frontend_link, "http://localhost:5173", "https://mjishu-book.vercel.app"
 ]
 const corsOptions = {
-    origin: allowedOrigins,
+    origin: true,
     credentials: true,
-    optionSuccessStatus: 200
+    optionSuccessStatus: 200,
 }
 
 app.use(cors(corsOptions));
