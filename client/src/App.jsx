@@ -21,7 +21,6 @@ function App() {
                 console.log("we have to redirect to auth:(")
                 navigate("/login")
             } else {
-                console.log(currentUser)
                 fetchPosts();
                 fetchAllUsers();
             }
@@ -56,7 +55,6 @@ function App() {
     }
 
     function follow(id) {
-        console.log("follow")
         fetch(`/api/user/find/${id}/follow`,
             {
                 method: "POST", headers: { "Content-Type": "application/json" },
@@ -69,7 +67,6 @@ function App() {
     }
 
     function unfollow(id) {
-        console.log('unfollow')
         fetch(`/api/user/find/${id}/unfollow`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },

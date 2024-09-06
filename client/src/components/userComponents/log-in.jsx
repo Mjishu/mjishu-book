@@ -79,7 +79,6 @@ function LogIn() {
             }),
             credentials: "include"
         }
-        console.log(fetchParams)
         fetch("/api/user/sign-in", fetchParams)
             .then(res => res.json())
             .then(data => {
@@ -99,7 +98,6 @@ function LogIn() {
     }
 
     function handleGithub() {
-        console.log("going to handleGithub!", githubUrl);
         window.location.href = githubUrl;
     }
 

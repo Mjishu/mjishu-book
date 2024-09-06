@@ -18,9 +18,9 @@ export default function DisplayComments(props) {
             .catch(error => console.error(`there was an error fetching comments: ${error}`))
     }, [props.postid])
 
-    function handleUserClick(id) {
-        console.log(`author id: ${id}`)
-    }
+    // function handleUserClick(id) {
+    //     console.log(`author id: ${id}`)
+    // }
 
     function handleDelete(id, authorid) {
         const fetchParams = {

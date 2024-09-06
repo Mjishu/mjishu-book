@@ -47,7 +47,6 @@ function MessageHolders() {
     }
 
     function createMessage(id) {
-        console.log("creating message")
         const fetchParams = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
